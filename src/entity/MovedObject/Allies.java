@@ -13,7 +13,7 @@ public class Allies  implements ObjectCanMove{
     
     public Allies(int row, int col) {
         Random random = new Random();
-        this.posAllies = new Point(random.nextInt(row) + 1, random.nextInt(col)+1); 
+        this.posAllies = new Point(random.nextInt(row-1)+0, random.nextInt(col-1)+0); 
         this.color = new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256));
     }
     @Override
@@ -27,9 +27,11 @@ public class Allies  implements ObjectCanMove{
     }
 
     @Override
-    public void draw(Graphics g, int tileSize) {
-        g.setColor(color);
-        g.fillOval(posAllies.x * tileSize ,posAllies.y *tileSize, tileSize, tileSize);
+    public void draw(Graphics g, int size) {
+        g.setColor(color); // Màu của Player hoặc Allies
+        Point pos = getPosition();
+        int offset = (16 - size) / 2; // Căn giữa trong ô 16px
+        g.fillRect(pos.x * 16 + offset, pos.y * 16 + offset, size, size);
     }
 
    

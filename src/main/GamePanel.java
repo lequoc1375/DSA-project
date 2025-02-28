@@ -16,7 +16,7 @@ import javax.swing.*;
 import manager.*;
 
 public class GamePanel extends JPanel implements Runnable {
-    private static final int TILE_SIZE = 16;
+    public static final int TILE_SIZE = 16;
     private static final int ROWS = 40;
     private static final int COLS = 40;
     private static final float TIME_STEP = 0.04f;
@@ -62,7 +62,7 @@ public class GamePanel extends JPanel implements Runnable {
             updateGame(TIME_STEP);
             repaint();
             try {
-                Thread.sleep((int) (TIME_STEP * 1000)); // 40ms
+                Thread.sleep((int) (TIME_STEP * 1700)); // 40ms
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -100,10 +100,10 @@ public class GamePanel extends JPanel implements Runnable {
             }
         }
 
-        player.draw(g, TILE_SIZE);
+        player.draw(g, 8);
 
         for (Allies ally : alliesList) {
-            ally.draw(g, TILE_SIZE);
+            ally.draw(g, 8);
         }
 
         turret.draw(g);
@@ -136,27 +136,22 @@ public class GamePanel extends JPanel implements Runnable {
         queue.add(center);
         visited.add(center);
 
-       
         int[][] directions = { { 0, 1 }, { 1, 0 }, { 0, -1 }, { -1, 0 }, { -1, -1 }, { -1, 1 }, { 1, -1 }, { 1, 1 } };
 
-       
         while (!queue.isEmpty() && positions.size() < 4) {
             Point current = queue.poll();
 
-         
             if (isValidPosition(current)) {
                 positions.add(current);
                 if (positions.size() == 4)
                     break;
             }
 
-          
             for (int[] dir : directions) {
                 int nx = current.x + dir[0];
                 int ny = current.y + dir[1];
                 Point neighbor = new Point(nx, ny);
 
-               
                 if (nx >= 0 && nx < COLS && ny >= 0 && ny < ROWS && !visited.contains(neighbor)) {
                     visited.add(neighbor);
                     queue.add(neighbor);
@@ -164,11 +159,9 @@ public class GamePanel extends JPanel implements Runnable {
             }
         }
 
-       
         return positions;
     }
 
-    
     private boolean isValidPosition(Point p) {
         int[][] costField = Barrier.getCostField();
         return p.x >= 0 && p.x < COLS && p.y >= 0 && p.y < ROWS && costField[p.y][p.x] != 1000;
