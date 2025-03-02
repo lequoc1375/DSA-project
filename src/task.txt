@@ -1,5 +1,5 @@
 1/3 . Rerange structure (DONE)
-2/3 . Fix overlap when object is moving
+2/3 . Fix overlap when object is moving (DONE)
 3/3 . Create menu.
 4/3 . Fire mode.
 5/3 . Spawn enemies
