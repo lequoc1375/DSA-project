@@ -16,7 +16,7 @@ public class MoveManager {
     private static final List<Point> stationaryObjects = new ArrayList<>();
     private static final Map<Point, Integer> objectCount = new HashMap<>();
     private static final Set<Point> reservedPositions = new HashSet<>();
-    private final float speed = 110f;
+    private final float speed = 150f;
     private final Point[][] flowField = new Point[ROWS][COLS];
     private Point targetPos;
     private boolean isMoving;
@@ -115,18 +115,19 @@ public class MoveManager {
             stuckCounter = 0;
         }
 
+        //Center of next grid
         float targetPixelX = nextGrid.x * TILE_SIZE + TILE_SIZE / 2f;
         float targetPixelY = nextGrid.y * TILE_SIZE + TILE_SIZE / 2f;
-
+        //distance from center of next grid to center current grid
         float dx = targetPixelX - pixelPos.x;
         float dy = targetPixelY - pixelPos.y;
         float distance = (float) Math.sqrt(dx * dx + dy * dy);
 
-        if (distance < speed * deltaTime) {
+        if (distance < speed * deltaTime) { // s = v*t
             
-            float t = (speed * deltaTime) / distance; // Tỷ lệ nội suy
-            pixelPos.x = pixelPos.x + (targetPixelX - pixelPos.x) * t;
-            pixelPos.y = pixelPos.y + (targetPixelY - pixelPos.y) * t;
+            float t = (speed * deltaTime) / distance; // Tỷ lệ  s1/s2
+            pixelPos.x = pixelPos.x + dx * t;
+            pixelPos.y = pixelPos.y + dy * t;
 
             updateObjectCount(currentGrid, -1);
             reservedPositions.remove(currentGrid);
@@ -137,11 +138,11 @@ public class MoveManager {
                 isMoving = false;
             }
         } else {
-
-            float seekX = (dx / distance) * speed;
+            // Tính velocity vector
+            float seekX = (dx / distance) * speed; // unit vecto vận tốc
             float seekY = (dy / distance) * speed;
 
-            Point2D.Float separationVector = new Point2D.Float(0, 0);
+            Point2D.Float separationVector = new Point2D.Float(0, 0); //Declare vecto tổng hợp
             float separationDistance = 2 * TILE_SIZE;
             for (MoveManager other : allManagers) {
                 if (other != this) {
@@ -150,9 +151,9 @@ public class MoveManager {
                     float sepDy = pixelPos.y - otherPos.y;
                     float sepDistance = (float) Math.sqrt(sepDx * sepDx + sepDy * sepDy);
                     if (sepDistance < separationDistance && sepDistance > 0) {
-                        float force = Math.min((separationDistance - sepDistance) / sepDistance, 1.0f);
-                        separationVector.x += (sepDx / sepDistance) * force * 0.5f;
-                        separationVector.y += (sepDy / sepDistance) * force * 0.5f;
+                        float force = Math.min((separationDistance - sepDistance) / sepDistance, 1.0f) * 0.5f;
+                        separationVector.x += (sepDx / sepDistance) * force;
+                        separationVector.y += (sepDy / sepDistance) * force ;
                     }
                 }
             }
@@ -160,21 +161,21 @@ public class MoveManager {
             float sepMagnitude = (float) Math
                     .sqrt(separationVector.x * separationVector.x + separationVector.y * separationVector.y);
             float sepX = 0, sepY = 0;
-            if (sepMagnitude > 0) {
-                float separationSpeed = speed * 0.3f;
-                if (sepMagnitude > 0) {
+            if (sepMagnitude > 0) { // Tránh trường hợp = 0
+                float separationSpeed = speed * 0.3f; // giới hạn tốc độ tránh
+                if (sepMagnitude > 0) { //Tính vecto đợn vị của vecto tổng hợp
                     sepX = (separationVector.x / sepMagnitude) * Math.min(separationSpeed, sepMagnitude);
 
                     sepY = (separationVector.y / sepMagnitude) * Math.min(separationSpeed, sepMagnitude);
                 }
             }
 
-            float velX = seekX + sepX;
+            float velX = seekX + sepX; //Vecto tổng hợp từ vecto đơn vị giữa object đến nextGrid và vecto đơn vị tổng hợp
             float velY = seekY + sepY;
 
             float velMagnitude = (float) Math.sqrt(velX * velX + velY * velY);
             if (velMagnitude > speed) {
-                velX = (velX / velMagnitude) * speed;
+                velX = (velX / velMagnitude) * speed; // tính độ dời 
                 velY = (velY / velMagnitude) * speed;
             }
 
