@@ -18,12 +18,10 @@ public class Player implements ObjectCanMove{
     public void setPosition(Point newPosition) {
         this.position = newPosition;
     }
-    @Override
+
     public void draw(Graphics g, int size) {
-        g.setColor(Color.BLUE); // Màu của Player hoặc Allies
-        Point pos = getPosition();
-        int offset = (16 - size) / 2; // Căn giữa trong ô 16px
-        g.fillRect(pos.x * 16 + offset, pos.y * 16 + offset, size, size);
+        g.setColor(Color.BLUE);
+        g.fillRect(position.x *16,position.y *16, 8, 8);
     }
 
     
