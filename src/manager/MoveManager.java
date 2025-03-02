@@ -16,7 +16,7 @@ public class MoveManager {
     private static final List<Point> stationaryObjects = new ArrayList<>();
     private static final Map<Point, Integer> objectCount = new HashMap<>();
     private static final Set<Point> reservedPositions = new HashSet<>();
-    private final float speed = 150f;
+    private final float speed = 120;
     private final Point[][] flowField = new Point[ROWS][COLS];
     private Point targetPos;
     private boolean isMoving;

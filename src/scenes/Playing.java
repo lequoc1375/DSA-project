@@ -40,6 +40,7 @@ public class Playing {
 
         initGenerate();
         new Timer(500, e -> turret.fireBullet(player.getPosition())).start();
+        new Timer(15000, e -> spawnAlly()).start();
     }
 
     public void initGenerate() {
@@ -55,12 +56,6 @@ public class Playing {
         randomColor = new Color(random.nextFloat(), random.nextFloat(), random.nextFloat());
         alliesList.clear();
         alliesManagers.clear();
-
-        for (int i = 0; i < noOfAllies; i++) {
-            Allies ally = new Allies(40, 40);
-            alliesList.add(ally);
-            alliesManagers.add(new MoveManager(ally));
-        }
 
         barrier.generateObstacles(player.getPosition(), new Point(turret.getX(), turret.getY()));
     }
@@ -233,6 +228,28 @@ public class Playing {
         for (int i = 0; i < alliesManagers.size(); i++) {
             alliesManagers.get(i).setTarget(positions.get(i + 1));
         }
+    }
+
+    private void spawnAlly() {
+        Random random = new Random();
+        int spawnX, spawnY;
+        Point spawnPoint;
+        int attempt = 0;
+
+        do { 
+            spawnX = random.nextInt(ROWS);
+            spawnY = random.nextInt(COLS);
+            spawnPoint = new Point(spawnX,spawnY);
+            attempt++;
+            if(attempt > 100) {
+                return;
+            }
+        } while (!isValidPosition(spawnPoint));
+
+        Allies ally = new Allies(spawnX, spawnY);
+        alliesList.add(ally);
+        alliesManagers.add(new MoveManager(ally));
+
     }
 
 }

@@ -1,7 +1,6 @@
 package entity.MovedObject;
 
 import java.awt.Color;
-import java.awt.Graphics;
 import java.awt.Point;
 import java.util.Random;
 
@@ -11,9 +10,9 @@ public class Allies  implements ObjectCanMove{
     private Color color;
     public static final float HITBOX_SIZE = 1.2f;
     
-    public Allies(int row, int col) {
+    public Allies(int x, int y) {
         Random random = new Random();
-        this.posAllies = new Point(random.nextInt(row-1)+0, random.nextInt(col-1)+0); 
+        this.posAllies = new Point(x, y); 
         this.color = new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256));
     }
     @Override
