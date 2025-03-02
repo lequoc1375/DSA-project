@@ -26,13 +26,7 @@ public class Allies  implements ObjectCanMove{
         this.posAllies = newPosition;
     }
 
-    @Override
-    public void draw(Graphics g, int size) {
-        g.setColor(color); // Màu của Player hoặc Allies
-        Point pos = getPosition();
-        int offset = (16 - size) / 2; // Căn giữa trong ô 16px
-        g.fillRect(pos.x * 16 + offset, pos.y * 16 + offset, size, size);
-    }
+
 
    
 }
