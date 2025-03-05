@@ -7,8 +7,8 @@ public class Bullet {
     private static final int SIZE = 6;
     private static final int SPEED = 10;
     private static final int TILE_SIZE = 16;
-    private static final int ROWS = 40;
-    private static final int COLS = 40;
+    private static final int ROWS = 60;
+    private static final int COLS = 60;
 
     public Bullet(Point startPos, double dx, double dy) {
         this.x = startPos.x * TILE_SIZE + TILE_SIZE / 2.0;

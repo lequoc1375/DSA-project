@@ -10,8 +10,8 @@ import scenes.Menu;
 import scenes.Playing;
 
 public class GamePanel extends JPanel implements Runnable {
-    public static final int COLS = 40;
-    public static final int ROWS = 40;
+    public static final int COLS = 60;
+    public static final int ROWS = 60;
     public static final int TILE_SIZE = 16;
     private static final float TIME_STEP = 0.01887f;
     private ScenesManager scenesManager;

@@ -8,8 +8,8 @@ import java.util.*;
 import java.util.List;
 
 public class MoveManager {
-    private static final int ROWS = 40;
-    private static final int COLS = 40;
+    private static final int ROWS = 60;
+    private static final int COLS = 60;
     private static final int TILE_SIZE = 16;
     private static final int[][] costMap = new int[ROWS][COLS];
     private static final int MAX_OBJECTS_PER_CELL = 2;
