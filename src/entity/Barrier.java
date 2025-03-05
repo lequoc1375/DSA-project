@@ -4,8 +4,8 @@ import java.awt.Point;
 import java.util.*;
 
 public class Barrier {
-    private static final int ROWS = 40;
-    private static final int COLS = 40;
+    private static final int ROWS = 60;
+    private static final int COLS = 60;
     private static final int[][] costField = new int[ROWS][COLS];
     private List<Integer> count = new ArrayList<>();
 

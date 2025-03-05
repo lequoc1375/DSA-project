@@ -1,7 +1,7 @@
 1/3 . Rerange structure (DONE)
 2/3 . Fix overlap when object is moving (DONE)
 3/3 . Create menu.(DONE)
-4/3 . Spawn allies logic
+4/3 . Spawn allies logic (DONE)
 5/3 . Spawn enemies
 6/3 . Laze
 7/3 . Items

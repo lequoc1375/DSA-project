@@ -5,7 +5,6 @@ import java.awt.Point;
 import java.util.Random;
 
 public class Allies  implements ObjectCanMove{
-    private int x, y;
     private Point posAllies;
     private Color color;
     public static final float HITBOX_SIZE = 1.2f;
