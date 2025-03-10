@@ -19,6 +19,7 @@ import java.util.Random;
 import java.util.Set;
 import javax.swing.*;
 import main.GamePanel;
+import manager.EnemiesManager;
 import manager.MoveManager;
 
 public class Playing {
@@ -26,7 +27,7 @@ public class Playing {
     private List<Bullet> bullets = new ArrayList<>();
     private List<Allies> alliesList = new ArrayList<>();
     private List<MoveManager> alliesManagers = new ArrayList<>();
-     private List<Enemy> enemies = new ArrayList<>();
+    private EnemiesManager enemiesManager;
     private MoveManager playerManager;
     private Barrier barrier;
     private Turret turret;
@@ -37,40 +38,38 @@ public class Playing {
     private Point targetPosition = null;
     private int noOfAllies = 5;
     private Color randomColor;
-    private int numberOfEnemies = 10;
-    private int countAliies = 0;
-    private int countEnemies = 0;
+    private int countBoomer = 0;
+
 
     public Playing() {
-
         initGenerate();
         new Timer(500, e -> turret.fireBullet(player.getPosition())).start();
         timerSpawnEnemies();
-        new Timer(7654,e -> SpawnEnemies()).start();
+        new Timer(7654, e -> SpawnEnemies()).start();
     }
 
     private void SpawnEnemies() {
         Random r = new Random();
 
-
-            int x = r.nextInt(COLS);
-            int y = r.nextInt(ROWS);
-            switch (r.nextInt(4)+1) {
-                case 1:
-                    enemies.add(new Breaker(x,y,100,2500)); //Xuyen shield
-                    break;
-                case 2:
-                    enemies.add(new Boomer(x,y,75,20000)); //Tha boom
-                    break;
-                case 3:
-                    enemies.add(new Laser(x,y,100,5000)); // Laze
-                    break;
-                case 4:
-                    enemies.add(new Sniper(x,y,100,7500)); //Sniper
-                    break;
-            }
-
-
+        int x = r.nextInt(COLS);
+        int y = r.nextInt(ROWS);
+        switch (r.nextInt(4) + 1) {
+            case 1:
+                enemiesManager.add(new Breaker(x, y, 100, 2500)); // Xuyên shield
+                break;
+            case 2:
+                if (countBoomer < 3) {
+                    enemiesManager.add(new Boomer(x, y, 75, 20000, player)); //boomer
+                    countBoomer++;
+                }
+                break;
+            case 3:
+                enemiesManager.add(new Shotgun(x, y, 100, 5000)); // Laze
+                break;
+            case 4:
+                enemiesManager.add(new Sniper(x, y, 100, 7500, player)); // Sniper
+                break;
+        }
     }
 
     public void initGenerate() {
@@ -82,18 +81,17 @@ public class Playing {
         barrier = new Barrier();
         playerManager = new MoveManager(player);
         playerManager.addStationNaryObject(new Point(turret.getX(), turret.getY()));
+        enemiesManager = new EnemiesManager();
         Random random = new Random();
         randomColor = new Color(random.nextFloat(), random.nextFloat(), random.nextFloat());
         alliesList.clear();
         alliesManagers.clear();
-        enemies.clear();
-
+        enemiesManager.clear();
 
         barrier.generateObstacles(player.getPosition(), new Point(turret.getX(), turret.getY()));
     }
 
     private void avoidOverlapping() {
-
         List<MoveManager> managers = new ArrayList<>();
         managers.add(playerManager);
         managers.addAll(alliesManagers);
@@ -107,10 +105,8 @@ public class Playing {
             offsetY[i] = 0;
         }
 
-
         float minDistance = 10f;
         float damping = 0.3f;
-
 
         for (int i = 0; i < n; i++) {
             Point2D.Float pos1 = managers.get(i).getPixelPos2D();
@@ -120,12 +116,9 @@ public class Playing {
                 float dy = pos1.y - pos2.y;
                 float dist = (float) Math.sqrt(dx * dx + dy * dy);
                 if (dist < minDistance && dist > 0) {
-
                     float overlap = (minDistance - dist) / 2f;
-
                     float adjustX = (dx / dist) * overlap * damping;
                     float adjustY = (dy / dist) * overlap * damping;
-
                     offsetX[i] += adjustX;
                     offsetY[i] += adjustY;
                     offsetX[j] -= adjustX;
@@ -133,7 +126,6 @@ public class Playing {
                 }
             }
         }
-
 
         for (int i = 0; i < n; i++) {
             Point2D.Float pos = managers.get(i).getPixelPos2D();
@@ -152,11 +144,10 @@ public class Playing {
                 g.fillRect(c * TILE_SIZE, r * TILE_SIZE, TILE_SIZE, TILE_SIZE);
             }
         }
-
+        enemiesManager.render(g);
         Point playerPixel = playerManager.getPixelPosition();
         g.setColor(Color.red);
         g.fillOval(playerPixel.x - 4, playerPixel.y - 4, 8, 8);
-
 
         for (MoveManager manager : alliesManagers) {
             Point allyPixel = manager.getPixelPosition();
@@ -170,9 +161,8 @@ public class Playing {
             bullet.draw(g);
         }
 
-        for (Enemy enemy : enemies) {
-            enemy.render(g);
-        }
+
+
     }
 
     public void updateGame(float dT) {
@@ -180,18 +170,12 @@ public class Playing {
             moveEntities(dT);
             avoidOverlapping();
         }
-
-        // Cập nhật góc quay cho enemy
-        for (Enemy enemy : enemies) {
-            enemy.update();
-        }
-
+        enemiesManager.update();
         bullets.removeIf(bullet -> {
             bullet.move();
             return bullet.isOutOfBounds();
         });
     }
-
 
     private void moveEntities(float dT) {
         List<MoveManager> allManagers = new ArrayList<>();
@@ -230,14 +214,15 @@ public class Playing {
         queue.add(center);
         visited.add(center);
 
-        int[][] directions = { { 0, 1 }, { 1, 0 }, { 0, -1 }, { -1, 0 }, { -1, -1 }, { -1, 1 }, { 1, -1 }, { 1, 1 } };
+        int[][] directions = { { 0, 1 }, { 1, 0 }, { 0, -1 }, { -1, 0 },
+                { -1, -1 }, { -1, 1 }, { 1, -1 }, { 1, 1 } };
 
-        while (!queue.isEmpty() && positions.size() < noOfAllies+1) {
+        while (!queue.isEmpty() && positions.size() < noOfAllies + 1) {
             Point current = queue.poll();
 
             if (isValidPosition(current)) {
                 positions.add(current);
-                if (positions.size() == noOfAllies+1)
+                if (positions.size() == noOfAllies + 1)
                     break;
             }
 
@@ -245,7 +230,6 @@ public class Playing {
                 int nx = current.x + dir[0];
                 int ny = current.y + dir[1];
                 Point neighbor = new Point(nx, ny);
-
                 if (nx >= 0 && nx < COLS && ny >= 0 && ny < ROWS && !visited.contains(neighbor)) {
                     visited.add(neighbor);
                     queue.add(neighbor);
@@ -263,7 +247,6 @@ public class Playing {
 
     private void assignTargetPositions(Point center) {
         List<Point> positions = calculateFormation(center);
-
         playerManager.setTarget(positions.get(0));
         for (int i = 0; i < alliesManagers.size(); i++) {
             alliesManagers.get(i).setTarget(positions.get(i + 1));
@@ -275,7 +258,6 @@ public class Playing {
         int spawnX, spawnY;
         Point spawnPoint;
         int attempt = 0;
-
         do {
             spawnX = random.nextInt(ROWS);
             spawnY = random.nextInt(COLS);
@@ -285,7 +267,6 @@ public class Playing {
                 return;
             }
         } while (!isValidPosition(spawnPoint));
-
         Allies ally = new Allies(spawnX, spawnY);
         alliesList.add(ally);
         alliesManagers.add(new MoveManager(ally));
@@ -293,10 +274,9 @@ public class Playing {
 
     public void timerSpawnEnemies() {
         new Timer(15000, e -> {
-            if (alliesList.size() < 5) {
+            if (alliesList.size() < noOfAllies) {
                 spawnAlly();
             }
         }).start();
     }
-
 }
