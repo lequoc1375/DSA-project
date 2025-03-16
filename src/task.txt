@@ -2,9 +2,11 @@
 2/3 . Fix overlap when object is moving (DONE)
 3/3 . Create menu.(DONE)
 4/3 . Spawn allies logic (DONE)
-5/3 . Spawn enemies
-6/3 . Laze
+5/3 . Spawn enemies (DONE)
+6/3 . Laze (DONE)
 7/3 . Items
 8/3 . Gacha allies.
 9/3 . Optimize code.
-10/3 .
+10/3 . Bommer (done)
+13/3. Sniper (done)
+16/3. Slower (Done)

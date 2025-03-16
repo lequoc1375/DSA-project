@@ -58,8 +58,7 @@ public class Playing {
         switch (r.nextInt(4) + 1) {
             case 1:
                 if (countBreaker < 1) {
-                    enemiesManager.add(new Breaker(x, y, 100, 2500)); // Xuyên shield
-
+                    enemiesManager.add(new EMPDisabler(x, y, 100, 2500, player, alliesList)); // Xuyên shield
                     countBreaker++;
                 }
                 break;
@@ -82,7 +81,6 @@ public class Playing {
                     enemiesManager.add(new Sniper(x, y, 100, 7500, player)); // Sniper
                     countSniper++;
                 }
-
                 break;
         }
     }
@@ -188,6 +186,7 @@ public class Playing {
             bullet.move();
             return bullet.isOutOfBounds();
         });
+        System.out.println(player.getSpeed());
     }
 
     private void moveEntities(float dT) {

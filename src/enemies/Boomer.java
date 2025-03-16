@@ -1,15 +1,14 @@
 package enemies;
 
+import entity.Barrier;
+import entity.Boom;
+import entity.MovedObject.Player;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import javax.swing.Timer;
-import entity.Barrier;
-import entity.Boom;
-import entity.MovedObject.Player;
-
 import static main.GamePanel.*;
 
 public class Boomer extends Enemy {
@@ -64,6 +63,7 @@ public class Boomer extends Enemy {
                 boom.triggerExplosion();
             }
         }
+        boomList.removeIf(Boom::isExplosionOver);
 
     }
 
