@@ -2,6 +2,7 @@ package manager;
 
 import entity.Barrier;
 import entity.MovedObject.ObjectCanMove;
+import entity.MovedObject.Player;
 import java.awt.*;
 import java.awt.geom.Point2D;
 import java.util.*;
@@ -16,7 +17,7 @@ public class MoveManager {
     private static final List<Point> stationaryObjects = new ArrayList<>();
     private static final Map<Point, Integer> objectCount = new HashMap<>();
     private static final Set<Point> reservedPositions = new HashSet<>();
-    private final float speed = 120;
+   
     private final Point[][] flowField = new Point[ROWS][COLS];
     private Point targetPos;
     private boolean isMoving;
@@ -26,6 +27,7 @@ public class MoveManager {
     private Point2D.Float pixelPos;
 
     public MoveManager(ObjectCanMove movingObject) {
+        
         this.movingObject = movingObject;
         this.isMoving = false;
         Point initialPos = movingObject.getPosition();
@@ -123,9 +125,9 @@ public class MoveManager {
         float dy = targetPixelY - pixelPos.y;
         float distance = (float) Math.sqrt(dx * dx + dy * dy);
 
-        if (distance < speed * deltaTime) { // s = v*t
+        if (distance < Player.speed * deltaTime) { // s = v*t
             
-            float t = (speed * deltaTime) / distance; // Tỷ lệ  s1/s2
+            float t = (Player.speed * deltaTime) / distance; // Tỷ lệ  s1/s2
             pixelPos.x = pixelPos.x + dx * t;
             pixelPos.y = pixelPos.y + dy * t;
 
@@ -139,8 +141,8 @@ public class MoveManager {
             }
         } else {
             // Tính velocity vector
-            float seekX = (dx / distance) * speed; // unit vecto vận tốc
-            float seekY = (dy / distance) * speed;
+            float seekX = (dx / distance) * Player.speed; // unit vecto vận tốc
+            float seekY = (dy / distance) * Player.speed;
 
             Point2D.Float separationVector = new Point2D.Float(0, 0); //Declare vecto tổng hợp
             float separationDistance = 2 * TILE_SIZE;
@@ -162,7 +164,7 @@ public class MoveManager {
                     .sqrt(separationVector.x * separationVector.x + separationVector.y * separationVector.y);
             float sepX = 0, sepY = 0;
             if (sepMagnitude > 0) { // Tránh trường hợp = 0
-                float separationSpeed = speed * 0.3f; // giới hạn tốc độ tránh
+                float separationSpeed = Player.speed * 0.3f; // giới hạn tốc độ tránh
                 if (sepMagnitude > 0) { //Tính vecto đợn vị của vecto tổng hợp
                     sepX = (separationVector.x / sepMagnitude) * Math.min(separationSpeed, sepMagnitude);
 
@@ -174,9 +176,9 @@ public class MoveManager {
             float velY = seekY + sepY;
 
             float velMagnitude = (float) Math.sqrt(velX * velX + velY * velY);
-            if (velMagnitude > speed) {
-                velX = (velX / velMagnitude) * speed; // tính độ dời 
-                velY = (velY / velMagnitude) * speed;
+            if (velMagnitude > Player.speed) {
+                velX = (velX / velMagnitude) * Player.speed; // tính độ dời 
+                velY = (velY / velMagnitude) * Player.speed;
             }
 
             pixelPos.x += velX * deltaTime;

@@ -39,7 +39,9 @@ public class Playing {
     private int noOfAllies = 5;
     private Color randomColor;
     private int countBoomer = 0;
-
+    private int countSlower = 0;
+    private int countBreaker = 0;
+    private int countSniper = 0;
 
     public Playing() {
         initGenerate();
@@ -55,19 +57,32 @@ public class Playing {
         int y = r.nextInt(ROWS);
         switch (r.nextInt(4) + 1) {
             case 1:
-                enemiesManager.add(new Breaker(x, y, 100, 2500)); // Xuyên shield
+                if (countBreaker < 1) {
+                    enemiesManager.add(new Breaker(x, y, 100, 2500)); // Xuyên shield
+
+                    countBreaker++;
+                }
                 break;
+
             case 2:
                 if (countBoomer < 3) {
-                    enemiesManager.add(new Boomer(x, y, 75, 20000, player)); //boomer
+                    enemiesManager.add(new Boomer(x, y, 75, 20000, player)); // boomer
                     countBoomer++;
                 }
                 break;
             case 3:
-                enemiesManager.add(new Shotgun(x, y, 100, 5000)); // Laze
+                if (countSlower < 1) {
+                    enemiesManager.add(new Slower(x, y, 100, 5000, player)); // Slower
+                    countSlower++;
+                }
+
                 break;
             case 4:
-                enemiesManager.add(new Sniper(x, y, 100, 7500, player)); // Sniper
+                if (countSniper < 1) {
+                    enemiesManager.add(new Sniper(x, y, 100, 7500, player)); // Sniper
+                    countSniper++;
+                }
+
                 break;
         }
     }
@@ -160,8 +175,6 @@ public class Playing {
         for (Bullet bullet : bullets) {
             bullet.draw(g);
         }
-
-
 
     }
 

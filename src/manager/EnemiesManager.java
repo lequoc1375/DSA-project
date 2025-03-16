@@ -1,7 +1,6 @@
 package manager;
 
 import enemies.Enemy;
-
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
