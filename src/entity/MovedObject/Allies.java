@@ -8,7 +8,7 @@ public class Allies  implements ObjectCanMove{
     private Point posAllies;
     private Color color;
     public static final float HITBOX_SIZE = 1.2f;
-    
+    public boolean skillActive = true;
     public Allies(int x, int y) {
         Random random = new Random();
         this.posAllies = new Point(x, y); 
@@ -24,6 +24,25 @@ public class Allies  implements ObjectCanMove{
         this.posAllies = newPosition;
     }
 
+    public void setWeaponDisabled(boolean disabled) {
+        skillActive = disabled;
+    }
+
+    public int getX() {
+        return posAllies.x;
+    }
+
+    public int getY() {
+        return posAllies.y;
+    }
+
+    public int getWidth() {
+        return 8;
+    }
+
+    public int getHeight() {
+        return 8;
+    }
 
 
    
