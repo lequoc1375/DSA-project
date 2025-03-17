@@ -4,6 +4,7 @@ import enemies.*;
 import entity.Barrier;
 import entity.Bullet;
 import entity.MovedObject.Allies;
+import entity.MovedObject.BlueAllies;
 import entity.MovedObject.Player;
 import entity.Turret;
 import java.awt.Color;
@@ -25,7 +26,7 @@ import manager.MoveManager;
 public class Playing {
 
     private List<Bullet> bullets = new ArrayList<>();
-    private List<Allies> alliesList = new ArrayList<>();
+    private Queue<Allies> alliesList = new LinkedList<>();
     private List<MoveManager> alliesManagers = new ArrayList<>();
     private EnemiesManager enemiesManager;
     private MoveManager playerManager;
@@ -58,7 +59,7 @@ public class Playing {
         switch (r.nextInt(4) + 1) {
             case 1:
                 if (countBreaker < 1) {
-                    enemiesManager.add(new EMPDisabler(x, y, 100, 2500, player, alliesList)); // Xuyên shield
+                    enemiesManager.add(new EMPDisabler(x, y, 100, 2500, player)); // Xuyên shield
                     countBreaker++;
                 }
                 break;
@@ -162,10 +163,14 @@ public class Playing {
         g.setColor(Color.red);
         g.fillOval(playerPixel.x - 4, playerPixel.y - 4, 8, 8);
 
-        for (MoveManager manager : alliesManagers) {
+        List<Allies> alliesArray = new ArrayList<>(alliesList);
+        for (int i = 0; i < alliesManagers.size(); i++) {
+            MoveManager manager = alliesManagers.get(i);
             Point allyPixel = manager.getPixelPosition();
-            g.setColor(randomColor);
-            g.fillOval(allyPixel.x - 4, allyPixel.y - 4, 8, 8);
+            
+            Allies ally = alliesArray.get(i);
+           
+            ally.draw(g,allyPixel.x,allyPixel.y);
         }
 
         turret.draw(g);
@@ -279,9 +284,9 @@ public class Playing {
                 return;
             }
         } while (!isValidPosition(spawnPoint));
-        Allies ally = new Allies(spawnX, spawnY);
-        alliesList.add(ally);
-        alliesManagers.add(new MoveManager(ally));
+        Allies bluAllies = new BlueAllies(spawnX, spawnY);
+        alliesList.add(bluAllies);
+        alliesManagers.add(new MoveManager(bluAllies));
     }
 
     public void timerSpawnEnemies() {
