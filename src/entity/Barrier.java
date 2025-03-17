@@ -89,4 +89,6 @@ public class Barrier {
     public static void setObstacle(int x, int y) {
         costField[y][x] = 1000;
     }
+
+
 }

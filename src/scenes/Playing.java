@@ -3,9 +3,7 @@ package scenes;
 import enemies.*;
 import entity.Barrier;
 import entity.Bullet;
-import entity.MovedObject.Allies;
-import entity.MovedObject.BlueAllies;
-import entity.MovedObject.Player;
+import entity.MovedObject.*;
 import entity.Turret;
 import java.awt.Color;
 import java.awt.Graphics;
@@ -20,15 +18,18 @@ import java.util.Random;
 import java.util.Set;
 import javax.swing.*;
 import main.GamePanel;
+import manager.AlliesManager;
 import manager.EnemiesManager;
 import manager.MoveManager;
 
 public class Playing {
 
     private List<Bullet> bullets = new ArrayList<>();
-    private Queue<Allies> alliesList = new LinkedList<>();
-    private List<MoveManager> alliesManagers = new ArrayList<>();
+    // Sử dụng Queue cho allies để duy trì thứ tự theo FIFO
+//    private Queue<Allies> alliesList = new LinkedList<>();
+    private List<MoveManager> alliesMoveManager = new ArrayList<>();
     private EnemiesManager enemiesManager;
+    private AlliesManager alliesManager;
     private MoveManager playerManager;
     private Barrier barrier;
     private Turret turret;
@@ -47,23 +48,23 @@ public class Playing {
     public Playing() {
         initGenerate();
         new Timer(500, e -> turret.fireBullet(player.getPosition())).start();
-        timerSpawnEnemies();
+        // Thiết lập Timer spawn enemies như cũ
         new Timer(7654, e -> SpawnEnemies()).start();
+        // Thiết lập Timer spawn allies định kỳ (ví dụ mỗi 15 giây)
+        new Timer(15000, e -> SpawnAllies()).start();
     }
 
     private void SpawnEnemies() {
         Random r = new Random();
-
         int x = r.nextInt(COLS);
         int y = r.nextInt(ROWS);
         switch (r.nextInt(4) + 1) {
             case 1:
                 if (countBreaker < 1) {
-                    enemiesManager.add(new EMPDisabler(x, y, 100, 2500, player)); // Xuyên shield
+                    enemiesManager.add(new EMPDisabler(x, y, 100, 2500, player, alliesManager.getAlliesList()));
                     countBreaker++;
                 }
                 break;
-
             case 2:
                 if (countBoomer < 3) {
                     enemiesManager.add(new Boomer(x, y, 75, 20000, player)); // boomer
@@ -75,7 +76,6 @@ public class Playing {
                     enemiesManager.add(new Slower(x, y, 100, 5000, player)); // Slower
                     countSlower++;
                 }
-
                 break;
             case 4:
                 if (countSniper < 1) {
@@ -83,6 +83,78 @@ public class Playing {
                     countSniper++;
                 }
                 break;
+        }
+    }
+
+
+    private void SpawnAllies() {
+        if (alliesManager.getAlliesList().size() >= noOfAllies) {
+            return;
+        }
+        Random r = new Random();
+        int spawnX, spawnY;
+        Point spawnPoint;
+        int attempt = 0;
+        do {
+            spawnX = r.nextInt(COLS);
+            spawnY = r.nextInt(ROWS);
+            spawnPoint = new Point(spawnX, spawnY);
+            attempt++;
+            if (attempt > 100) {
+                return;
+            }
+        } while (!isValidPosition(spawnPoint));
+
+        Allies newAlly = spawnWeightedAlly(spawnX, spawnY);
+        alliesManager.add(newAlly);
+        alliesMoveManager.add(new MoveManager(newAlly));
+
+    }
+
+    private Allies spawnWeightedAlly(int spawnX, int spawnY) {
+        List<WeightedAlly> weightedAllies = new ArrayList<>();
+        weightedAllies.add(new WeightedAlly("Blue", 60));
+        weightedAllies.add(new WeightedAlly("Brown", 30));
+        weightedAllies.add(new WeightedAlly("Orange", 10));
+        weightedAllies.add(new WeightedAlly("Purple", 10));
+
+        int totalWeight = 0;
+        for (WeightedAlly wa : weightedAllies) {
+            totalWeight += wa.weight;
+        }
+        Random random = new Random();
+        int randomWeight = random.nextInt(totalWeight);
+        int sum = 0;
+        String selectedType = "Blue";
+        for (WeightedAlly wa : weightedAllies) {
+            sum += wa.weight;
+            if (randomWeight < sum) {
+                selectedType = wa.type;
+                break;
+            }
+        }
+
+        if (selectedType.equals("Blue")) {
+            return new BlueAllies(spawnX, spawnY);
+        } else if (selectedType.equals("Brown")) {
+
+            return new BrownAllies(spawnX, spawnY);
+        } else if (selectedType.equals("Purple")) {
+
+            return new PurpleAllies(spawnX, spawnY);
+        } else if (selectedType.equals("Orange")) {
+            return new OrangeAllies(spawnX,spawnY);
+        }
+        return new BlueAllies(spawnX, spawnY);
+    }
+
+
+    private static class WeightedAlly {
+        String type;
+        int weight;
+        WeightedAlly(String type, int weight) {
+            this.type = type;
+            this.weight = weight;
         }
     }
 
@@ -96,32 +168,29 @@ public class Playing {
         playerManager = new MoveManager(player);
         playerManager.addStationNaryObject(new Point(turret.getX(), turret.getY()));
         enemiesManager = new EnemiesManager();
+        alliesManager = new AlliesManager();
         Random random = new Random();
         randomColor = new Color(random.nextFloat(), random.nextFloat(), random.nextFloat());
-        alliesList.clear();
-        alliesManagers.clear();
+        alliesManager.clear();
+        alliesMoveManager.clear();
         enemiesManager.clear();
-
+        alliesManager.clear();
         barrier.generateObstacles(player.getPosition(), new Point(turret.getX(), turret.getY()));
     }
 
     private void avoidOverlapping() {
         List<MoveManager> managers = new ArrayList<>();
         managers.add(playerManager);
-        managers.addAll(alliesManagers);
-
+        managers.addAll(alliesMoveManager);
         int n = managers.size();
-
         float[] offsetX = new float[n];
         float[] offsetY = new float[n];
         for (int i = 0; i < n; i++) {
             offsetX[i] = 0;
             offsetY[i] = 0;
         }
-
         float minDistance = 10f;
         float damping = 0.3f;
-
         for (int i = 0; i < n; i++) {
             Point2D.Float pos1 = managers.get(i).getPixelPos2D();
             for (int j = i + 1; j < n; j++) {
@@ -140,7 +209,6 @@ public class Playing {
                 }
             }
         }
-
         for (int i = 0; i < n; i++) {
             Point2D.Float pos = managers.get(i).getPixelPos2D();
             pos.x += offsetX[i];
@@ -151,7 +219,6 @@ public class Playing {
 
     public void draw(Graphics g) {
         int[][] costField = Barrier.getCostField();
-
         for (int r = 0; r < ROWS; r++) {
             for (int c = 0; c < COLS; c++) {
                 g.setColor(costField[r][c] == 1000 ? Color.BLACK : Color.WHITE);
@@ -160,25 +227,21 @@ public class Playing {
         }
         enemiesManager.render(g);
         Point playerPixel = playerManager.getPixelPosition();
-        g.setColor(Color.red);
+        g.setColor(Color.RED);
         g.fillOval(playerPixel.x - 4, playerPixel.y - 4, 8, 8);
 
-        List<Allies> alliesArray = new ArrayList<>(alliesList);
-        for (int i = 0; i < alliesManagers.size(); i++) {
-            MoveManager manager = alliesManagers.get(i);
+
+        List<Allies> newList = alliesManager.getAlliesList();
+        for (int i = 0; i < alliesMoveManager.size(); i++) {
+            MoveManager manager = alliesMoveManager.get(i);
             Point allyPixel = manager.getPixelPosition();
-            
-            Allies ally = alliesArray.get(i);
-           
-            ally.draw(g,allyPixel.x,allyPixel.y);
+            Allies ally =newList.get(i);
+            ally.draw(g, allyPixel.x, allyPixel.y);
         }
-
-        turret.draw(g);
-
-        for (Bullet bullet : bullets) {
-            bullet.draw(g);
-        }
-
+//        turret.draw(g);
+//        for (Bullet bullet : bullets) {
+//            bullet.draw(g);
+//        }
     }
 
     public void updateGame(float dT) {
@@ -187,32 +250,32 @@ public class Playing {
             avoidOverlapping();
         }
         enemiesManager.update();
-        bullets.removeIf(bullet -> {
-            bullet.move();
-            return bullet.isOutOfBounds();
-        });
-        System.out.println(player.getSpeed());
+//        bullets.removeIf(bullet -> {
+//            bullet.move();
+//            return bullet.isOutOfBounds();
+//        });
+
+
+        for (Allies ally : alliesManager.getAlliesList()) {
+            ally.update();
+        }
     }
 
     private void moveEntities(float dT) {
         List<MoveManager> allManagers = new ArrayList<>();
         allManagers.add(playerManager);
-        allManagers.addAll(alliesManagers);
-
+        allManagers.addAll(alliesMoveManager);
         boolean allStopped = true;
-
         if (playerManager.isMoving()) {
             playerManager.moveObject(dT, allManagers);
             allStopped = false;
         }
-
-        for (MoveManager manager : alliesManagers) {
+        for (MoveManager manager : alliesMoveManager) {
             if (manager.isMoving()) {
                 manager.moveObject(dT, allManagers);
                 allStopped = false;
             }
         }
-
         if (allStopped) {
             targetPosition = null;
         }
@@ -227,22 +290,17 @@ public class Playing {
         List<Point> positions = new ArrayList<>();
         Set<Point> visited = new HashSet<>();
         Queue<Point> queue = new LinkedList<>();
-
         queue.add(center);
         visited.add(center);
-
         int[][] directions = { { 0, 1 }, { 1, 0 }, { 0, -1 }, { -1, 0 },
                 { -1, -1 }, { -1, 1 }, { 1, -1 }, { 1, 1 } };
-
         while (!queue.isEmpty() && positions.size() < noOfAllies + 1) {
             Point current = queue.poll();
-
             if (isValidPosition(current)) {
                 positions.add(current);
                 if (positions.size() == noOfAllies + 1)
                     break;
             }
-
             for (int[] dir : directions) {
                 int nx = current.x + dir[0];
                 int ny = current.y + dir[1];
@@ -253,7 +311,6 @@ public class Playing {
                 }
             }
         }
-
         return positions;
     }
 
@@ -265,35 +322,38 @@ public class Playing {
     private void assignTargetPositions(Point center) {
         List<Point> positions = calculateFormation(center);
         playerManager.setTarget(positions.get(0));
-        for (int i = 0; i < alliesManagers.size(); i++) {
-            alliesManagers.get(i).setTarget(positions.get(i + 1));
+        for (int i = 0; i < alliesMoveManager.size(); i++) {
+            alliesMoveManager.get(i).setTarget(positions.get(i + 1));
         }
     }
 
-    private void spawnAlly() {
-        Random random = new Random();
-        int spawnX, spawnY;
-        Point spawnPoint;
-        int attempt = 0;
-        do {
-            spawnX = random.nextInt(ROWS);
-            spawnY = random.nextInt(COLS);
-            spawnPoint = new Point(spawnX, spawnY);
-            attempt++;
-            if (attempt > 100) {
-                return;
-            }
-        } while (!isValidPosition(spawnPoint));
-        Allies bluAllies = new BlueAllies(spawnX, spawnY);
-        alliesList.add(bluAllies);
-        alliesManagers.add(new MoveManager(bluAllies));
-    }
 
-    public void timerSpawnEnemies() {
-        new Timer(15000, e -> {
-            if (alliesList.size() < noOfAllies) {
-                spawnAlly();
-            }
-        }).start();
-    }
+//    private void spawnAlly() {
+//        Random random = new Random();
+//        int spawnX, spawnY;
+//        Point spawnPoint;
+//        int attempt = 0;
+//        do {
+//            spawnX = random.nextInt(ROWS);
+//            spawnY = random.nextInt(COLS);
+//            spawnPoint = new Point(spawnX, spawnY);
+//            attempt++;
+//            if (attempt > 100) {
+//                return;
+//            }
+//        } while (!isValidPosition(spawnPoint));
+//        Allies bluAllies = new BlueAllies(spawnX, spawnY);
+//        alliesList.add(bluAllies);
+//        alliesManagers.add(new MoveManager(bluAllies));
+//
+//    }
+//
+//
+//    public void timeSpawnAllies() {
+//        new Timer(15000, e -> {
+//            if (alliesList.size() < noOfAllies) {
+//                spawnAlly();
+//            }
+//        }).start();
+//    }
 }

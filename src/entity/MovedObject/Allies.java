@@ -10,10 +10,12 @@ public  class Allies  implements ObjectCanMove{
     private Color color;
     public static final float HITBOX_SIZE = 1.2f;
     public boolean skillActive = true;
+    public int x, y;
     public Allies(int x, int y, Color color) {
-        Random random = new Random();
         this.posAllies = new Point(x, y); 
         this.color = color;
+        this.x = x;
+        this.y = y;
         
     }
     @Override
@@ -23,7 +25,10 @@ public  class Allies  implements ObjectCanMove{
 
     @Override
     public void setPosition(Point newPosition) {
+
         this.posAllies = newPosition;
+        this.x = newPosition.x;
+        this.y = newPosition.y;
     }
 
     public void setWeaponDisabled(boolean disabled) {
@@ -31,11 +36,11 @@ public  class Allies  implements ObjectCanMove{
     }
 
     public int getX() {
-        return posAllies.x;
+        return x;
     }
 
     public int getY() {
-        return posAllies.y;
+        return y;
     }
 
     public int getWidth() {
@@ -54,8 +59,7 @@ public  class Allies  implements ObjectCanMove{
     public Color getColor() {
         return color;
     }
+    public void update() {
 
-    
-    
-   
+    }
 }

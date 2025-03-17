@@ -24,7 +24,7 @@ public class Boomer extends Enemy {
     @Override
     public void attack() {
         attackTimer = new Timer(5000, (ActionEvent e) -> {
-            System.out.println("Boomer attacking: Dropping bombs!");
+
             Random random = new Random();
             int totalBombsPerTurn = 3;
 
@@ -40,7 +40,7 @@ public class Boomer extends Enemy {
 
                 Boom boom = new Boom(point);
                 boomList.add(boom);
-                System.out.println("Bomb dropped at (" + bombX + ", " + bombY + ")");
+
             }
         });
         attackTimer.setRepeats(false);
