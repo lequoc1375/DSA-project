@@ -7,7 +7,7 @@ import java.util.List;
 
 public class EnemiesManager {
 
-    private List<Enemy> enemies = new ArrayList<>();
+    private static List<Enemy> enemies = new ArrayList<>();
     public EnemiesManager() {
 
     }
@@ -32,6 +32,8 @@ public class EnemiesManager {
         enemies.add(enemy);
     }
 
-
+    public static List<Enemy> getEnemies() {
+        return enemies;
+    }
 
 }

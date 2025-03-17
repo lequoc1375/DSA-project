@@ -58,4 +58,12 @@ public abstract class Enemy {
             angle -= 360;
         }
     }
+
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
 }

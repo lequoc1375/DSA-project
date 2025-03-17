@@ -26,21 +26,19 @@ public class Slower extends Enemy {
         isOnCooldown = true;
         float originSpeed = Player.speed;
 
-        System.out.println("Before slow: " + player.getSpeed());
         player.setSpeed(80);
-        System.out.println("After slow: " + player.getSpeed());
 
         effectTimer = new Timer(6000, (ActionEvent e) -> {
             player.setSpeed(originSpeed);
             isSlowed = false;
-            System.out.println("Speed restored: " + player.getSpeed());
+
         });
         effectTimer.setRepeats(false);
         effectTimer.start();
 
         Timer cooldownTimer = new Timer(15000, (ActionEvent ev) -> {
             isOnCooldown = false;
-            System.out.println("Cooldown ended, can attack again.");
+
         });
         cooldownTimer.setRepeats(false);
         cooldownTimer.start();

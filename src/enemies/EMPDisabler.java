@@ -19,7 +19,7 @@ public class EMPDisabler extends Enemy {
     private final int shieldDiameter = 350;
     private final int shieldRadius = shieldDiameter / 2;
 
-    public EMPDisabler(int x, int y, int health, float fireRate, Player player) {
+    public EMPDisabler(int x, int y, int health, float fireRate, Player player, List<Allies> allies) {
         super(x, y, health, fireRate, new Color(0, 191, 255)); 
         this.player = player;
         this.allies = allies;

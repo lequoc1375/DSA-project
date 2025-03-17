@@ -43,7 +43,7 @@ public class Sniper extends Enemy {
         laserTargetX = player.getX();
         laserTargetY = player.getY();
         isAttacking = true;
-        System.out.println("Sniper attacking: Laser ON.");
+
 
         attackTimer = new Timer(5000, (ActionEvent e) -> {
             System.out.println("Timer triggered!");
@@ -68,11 +68,9 @@ public class Sniper extends Enemy {
 
                 Bullet bullet = new Bullet(startPos, vx, vy);
                 enemyBullets.add(bullet);
-                System.out.println("Bullet added: " + enemyBullets.size());
-                System.out.println("Bullet fired from Sniper at " + startPos +
-                        " with velocity (" + vx + ", " + vy + ")");
+
             } else {
-                System.out.println("Player out of range at bullet fire time.");
+
             }
             showLaser = false;
             isAttacking = false;
@@ -92,11 +90,11 @@ public class Sniper extends Enemy {
             if (isAttacking && attackTimer != null) {
                 attackTimer.stop();
                 isAttacking = false;
-                System.out.println("Attack canceled: player left range.");
+
             }
         } else {
             if (!isAttacking) {
-                System.out.println("Is attacking!");
+
                 attack();
             }
         }
