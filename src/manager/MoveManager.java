@@ -60,7 +60,7 @@ public class MoveManager {
     }
 
     private void computeFlowField() {
-        // Reset flow field
+        
         for (int r = 0; r < ROWS; r++) {
             for (int c = 0; c < COLS; c++) {
                 flowField[r][c] = null;
@@ -117,17 +117,17 @@ public class MoveManager {
             stuckCounter = 0;
         }
 
-        //Center of next grid
+
         float targetPixelX = nextGrid.x * TILE_SIZE + TILE_SIZE / 2f;
         float targetPixelY = nextGrid.y * TILE_SIZE + TILE_SIZE / 2f;
-        //distance from center of next grid to center current grid
+     
         float dx = targetPixelX - pixelPos.x;
         float dy = targetPixelY - pixelPos.y;
         float distance = (float) Math.sqrt(dx * dx + dy * dy);
 
-        if (distance < Player.speed * deltaTime) { // s = v*t
+        if (distance < Player.speed * deltaTime) { 
             
-            float t = (Player.speed * deltaTime) / distance; // Tỷ lệ  s1/s2
+            float t = (Player.speed * deltaTime) / distance; 
             pixelPos.x = pixelPos.x + dx * t;
             pixelPos.y = pixelPos.y + dy * t;
 
@@ -140,11 +140,11 @@ public class MoveManager {
                 isMoving = false;
             }
         } else {
-            // Tính velocity vector
-            float seekX = (dx / distance) * Player.speed; // unit vecto vận tốc
+           
+            float seekX = (dx / distance) * Player.speed; 
             float seekY = (dy / distance) * Player.speed;
 
-            Point2D.Float separationVector = new Point2D.Float(0, 0); //Declare vecto tổng hợp
+            Point2D.Float separationVector = new Point2D.Float(0, 0); 
             float separationDistance = 2 * TILE_SIZE;
             for (MoveManager other : allManagers) {
                 if (other != this) {
@@ -163,21 +163,21 @@ public class MoveManager {
             float sepMagnitude = (float) Math
                     .sqrt(separationVector.x * separationVector.x + separationVector.y * separationVector.y);
             float sepX = 0, sepY = 0;
-            if (sepMagnitude > 0) { // Tránh trường hợp = 0
-                float separationSpeed = Player.speed * 0.3f; // giới hạn tốc độ tránh
-                if (sepMagnitude > 0) { //Tính vecto đợn vị của vecto tổng hợp
+            if (sepMagnitude > 0) { 
+                float separationSpeed = Player.speed * 0.3f; 
+                if (sepMagnitude > 0) { 
                     sepX = (separationVector.x / sepMagnitude) * Math.min(separationSpeed, sepMagnitude);
 
                     sepY = (separationVector.y / sepMagnitude) * Math.min(separationSpeed, sepMagnitude);
                 }
             }
 
-            float velX = seekX + sepX; //Vecto tổng hợp từ vecto đơn vị giữa object đến nextGrid và vecto đơn vị tổng hợp
+            float velX = seekX + sepX; 
             float velY = seekY + sepY;
 
             float velMagnitude = (float) Math.sqrt(velX * velX + velY * velY);
             if (velMagnitude > Player.speed) {
-                velX = (velX / velMagnitude) * Player.speed; // tính độ dời 
+                velX = (velX / velMagnitude) * Player.speed; 
                 velY = (velY / velMagnitude) * Player.speed;
             }
 
@@ -199,7 +199,7 @@ public class MoveManager {
         }
         objectCount.put(pos, count);
         int baseCost = stationaryObjects.contains(pos) ? 1000 : 1;
-        costMap[pos.y][pos.x] = baseCost + 100 * count; // Adjust cost based on occupancy
+        costMap[pos.y][pos.x] = baseCost + 100 * count; 
     }
 
     private boolean isValidPosition(int x, int y) {

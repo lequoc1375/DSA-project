@@ -10,7 +10,7 @@ public abstract class Enemy {
     protected float fireRate;
     protected float spawnDelay;
     protected Color color;
-    private double angle = 0; // Góc quay (đơn vị độ)
+    private double angle = 0; 
 
     public Enemy(int x, int y, int health, float fireRate, Color color) {
         this.x = x;
@@ -53,7 +53,7 @@ public abstract class Enemy {
     }
 
     public void update() {
-        angle += 2; // Xoay 2 độ mỗi frame (có thể điều chỉnh)
+        angle += 2; 
         if (angle >= 360) {
             angle -= 360;
         }
