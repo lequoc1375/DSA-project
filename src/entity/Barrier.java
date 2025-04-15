@@ -10,7 +10,7 @@ public class Barrier {
     private List<Integer> count = new ArrayList<>();
 
     public Barrier() {
-        // Mặc định đặt tất cả các ô có giá trị 1 (có thể đi qua)
+
         for (int r = 0; r < ROWS; r++) {
             for (int c = 0; c < COLS; c++) {
                 costField[r][c] = 1;

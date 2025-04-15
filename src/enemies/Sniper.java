@@ -2,6 +2,8 @@ package enemies;
 
 import entity.MovedObject.Player;
 import entity.Bullet;
+import manager.MoveManager;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -11,7 +13,7 @@ import java.util.List;
 import static main.GamePanel.TILE_SIZE;
 
 public class Sniper extends Enemy {
-    private Player player;
+    private MoveManager player;
     private boolean showLaser = false;
     private int laserTargetX;
     private int laserTargetY;
@@ -20,7 +22,7 @@ public class Sniper extends Enemy {
     private Timer attackTimer = null;
     private List<Bullet> enemyBullets;
 
-    public Sniper(int x, int y, int health, float fireRate, Player player) {
+    public Sniper(int x, int y, int health, float fireRate, MoveManager player) {
         super(x, y, health, fireRate, new Color(139, 0, 0));
         this.player = player;
         enemyBullets = new ArrayList<>();
@@ -29,8 +31,8 @@ public class Sniper extends Enemy {
     private boolean isPlayerWithinRange() {
         int sniperCenterX = this.x * TILE_SIZE + TILE_SIZE / 2;
         int sniperCenterY = this.y * TILE_SIZE + TILE_SIZE / 2;
-        int playerCenterX = player.getX() * TILE_SIZE + TILE_SIZE / 2;
-        int playerCenterY = player.getY() * TILE_SIZE + TILE_SIZE / 2;
+        int playerCenterX = player.getPixelPosition().x;
+        int playerCenterY = player.getPixelPosition().y;
         double dx = playerCenterX - sniperCenterX;
         double dy = playerCenterY - sniperCenterY;
         double distance = Math.sqrt(dx * dx + dy * dy);
@@ -40,8 +42,8 @@ public class Sniper extends Enemy {
     @Override
     public void attack() {
         showLaser = true;
-        laserTargetX = player.getX();
-        laserTargetY = player.getY();
+        laserTargetX =player.getPixelPosition().x ;
+        laserTargetY =player.getPixelPosition().y ;
         isAttacking = true;
 
 
@@ -52,11 +54,11 @@ public class Sniper extends Enemy {
                 int startY = this.y ;
                 Point startPos = new Point(startX, startY);
 
-                int targetX = player.getX();
-                int targetY = player.getY();
+                int targetX = player.getPixelPosition().x ;
+                int targetY = player.getPixelPosition().y ;
 
-                double dx = (targetX - startX) * TILE_SIZE + TILE_SIZE / 2.0;
-                double dy = (targetY - startY) * TILE_SIZE + TILE_SIZE / 2.0;
+                double dx = targetX - (startX * TILE_SIZE + TILE_SIZE / 2.0);
+                double dy = targetY - (startY * TILE_SIZE + TILE_SIZE / 2.0);
                 double distance = Math.sqrt(dx * dx + dy * dy);
                 if (distance != 0) {
                     dx /= distance;
@@ -118,8 +120,8 @@ public class Sniper extends Enemy {
 
             int centerX = this.x * TILE_SIZE + TILE_SIZE / 2;
             int centerY = this.y * TILE_SIZE + TILE_SIZE / 2;
-            int targetX = player.getX() * TILE_SIZE + TILE_SIZE / 2;
-            int targetY = player.getY() * TILE_SIZE + TILE_SIZE / 2;
+            int targetX = player.getPixelPosition().x ;
+            int targetY = player.getPixelPosition().y ;
 
             // Tạo hiệu ứng gradient cho laser
             GradientPaint gp = new GradientPaint(centerX, centerY, Color.RED, targetX, targetY, Color.ORANGE, true);
