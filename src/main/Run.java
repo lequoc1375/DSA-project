@@ -10,5 +10,6 @@ public class Run {
         jf.pack();
         jf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         jf.setVisible(true);
+        gamePanel.requestFocusInWindow();
     }
 }

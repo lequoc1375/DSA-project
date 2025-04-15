@@ -1,5 +1,6 @@
 package scenes;
 
+import controller.KeyHandler;
 import enemies.*;
 import entity.Barrier;
 import entity.Bullet;
@@ -21,6 +22,8 @@ import main.GamePanel;
 import manager.AlliesManager;
 import manager.EnemiesManager;
 import manager.MoveManager;
+
+import static com.sun.java.accessibility.util.AWTEventMonitor.addKeyListener;
 
 public class Playing {
 
@@ -44,14 +47,18 @@ public class Playing {
     private int countSlower = 0;
     private int countBreaker = 0;
     private int countSniper = 0;
-
+    private BrownAllies brownAllies;
+    private int countBrown = 0;
+    private int countOrange = 0;
+    private OrangeAllies orangeAllies;
+    private Point playerPixel;
     public Playing() {
         initGenerate();
+
         new Timer(500, e -> turret.fireBullet(player.getPosition())).start();
-        // Thiết lập Timer spawn enemies như cũ
         new Timer(7654, e -> SpawnEnemies()).start();
-        // Thiết lập Timer spawn allies định kỳ (ví dụ mỗi 15 giây)
         new Timer(15000, e -> SpawnAllies()).start();
+
     }
 
     private void SpawnEnemies() {
@@ -79,7 +86,7 @@ public class Playing {
                 break;
             case 4:
                 if (countSniper < 1) {
-                    enemiesManager.add(new Sniper(x, y, 100, 7500, player)); // Sniper
+                    enemiesManager.add(new Sniper(x, y, 100, 7500, playerManager)); // Sniper
                     countSniper++;
                 }
                 break;
@@ -113,10 +120,23 @@ public class Playing {
 
     private Allies spawnWeightedAlly(int spawnX, int spawnY) {
         List<WeightedAlly> weightedAllies = new ArrayList<>();
-        weightedAllies.add(new WeightedAlly("Blue", 60));
-        weightedAllies.add(new WeightedAlly("Brown", 30));
-        weightedAllies.add(new WeightedAlly("Orange", 10));
-        weightedAllies.add(new WeightedAlly("Purple", 10));
+        weightedAllies.add(new WeightedAlly("Blue", 20));
+        if (countBrown < 1) {
+            weightedAllies.add(new WeightedAlly("Brown", 30));
+            countBrown++;
+        } else {
+            weightedAllies.add(new WeightedAlly("Brown", 0));
+        }
+
+        if (countOrange < 1) {
+            weightedAllies.add(new WeightedAlly("Orange", 20));
+            countOrange++;
+        } else {
+            weightedAllies.add(new WeightedAlly("Orange", 0));
+        }
+
+
+        weightedAllies.add(new WeightedAlly("Purple", 30));
 
         int totalWeight = 0;
         for (WeightedAlly wa : weightedAllies) {
@@ -124,8 +144,10 @@ public class Playing {
         }
         Random random = new Random();
         int randomWeight = random.nextInt(totalWeight);
+
+
         int sum = 0;
-        String selectedType = "Blue";
+        String selectedType = "";
         for (WeightedAlly wa : weightedAllies) {
             sum += wa.weight;
             if (randomWeight < sum) {
@@ -137,13 +159,14 @@ public class Playing {
         if (selectedType.equals("Blue")) {
             return new BlueAllies(spawnX, spawnY);
         } else if (selectedType.equals("Brown")) {
-
-            return new BrownAllies(spawnX, spawnY);
+            brownAllies = new BrownAllies(spawnX, spawnY,playerManager);
+            return brownAllies;
         } else if (selectedType.equals("Purple")) {
 
             return new PurpleAllies(spawnX, spawnY);
         } else if (selectedType.equals("Orange")) {
-            return new OrangeAllies(spawnX,spawnY);
+            orangeAllies = new OrangeAllies(spawnX,spawnY, playerManager);
+            return orangeAllies;
         }
         return new BlueAllies(spawnX, spawnY);
     }
@@ -226,7 +249,8 @@ public class Playing {
             }
         }
         enemiesManager.render(g);
-        Point playerPixel = playerManager.getPixelPosition();
+
+        playerPixel = playerManager.getPixelPosition();
         g.setColor(Color.RED);
         g.fillOval(playerPixel.x - 4, playerPixel.y - 4, 8, 8);
 
@@ -259,6 +283,9 @@ public class Playing {
         for (Allies ally : alliesManager.getAlliesList()) {
             ally.update();
         }
+
+
+
     }
 
     private void moveEntities(float dT) {
@@ -356,4 +383,13 @@ public class Playing {
 //            }
 //        }).start();
 //    }
+
+
+    public BrownAllies getBrownAllies() {
+        return brownAllies;
+    }
+
+    public OrangeAllies getOrangeAllies() {
+        return orangeAllies;
+    }
 }

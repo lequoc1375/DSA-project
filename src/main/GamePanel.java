@@ -1,5 +1,6 @@
 package main;
 
+import controller.KeyHandler;
 import controller.MouseHandler;
 import java.awt.*;
 import java.awt.event.MouseEvent;
@@ -22,10 +23,14 @@ public class GamePanel extends JPanel implements Runnable {
     
     public GamePanel() {
         setPreferredSize(new Dimension(COLS * TILE_SIZE, ROWS * TILE_SIZE));
+        setFocusable(true);
+        requestFocusInWindow();
         playing = new Playing();
         menu = new Menu();
         scenesManager = new ScenesManager(this);
         addMouseListener(new MouseHandler(this));
+        addMouseMotionListener(new MouseHandler(this));
+        addKeyListener(new KeyHandler(playing));
         new Thread(this).start();
     }
     

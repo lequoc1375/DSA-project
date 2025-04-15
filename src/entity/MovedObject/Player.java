@@ -37,19 +37,10 @@ public class Player implements ObjectCanMove {
  
 
     public void draw(Graphics g, int size) {
-        g.setColor(Color.BLUE);
-        g.fillRect(position.x * 16, position.y * 16, size, size);
 
-        if (isSlowed) {
-            g.setColor(new Color(255, 153, 51, 150));
-            g.fillOval(getX()*16, getY()*16, 8 + 3, 8 + 3);
-        }
-        
     }
 
-    public void setSlowed(boolean isSlowed) {
-        this.isSlowed = isSlowed;
-    }
+
 
     public void setEmpDisabled(boolean disabled) {
         skillActive = false;
@@ -66,4 +57,6 @@ public class Player implements ObjectCanMove {
     public boolean isEmpDisabled() {
         return skillActive;
     }
+
+
 }

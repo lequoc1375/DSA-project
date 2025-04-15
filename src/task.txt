@@ -12,3 +12,6 @@
 16/3. Slower (Done)
 16/3. EMPDisable (Done)
 17/3. Active skill allies
+18/3. Blue allies (done)
+14/4. Brown (done)
+

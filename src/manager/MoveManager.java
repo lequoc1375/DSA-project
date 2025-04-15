@@ -210,6 +210,11 @@ public class MoveManager {
         return new Point((int) pixelPos.x, (int) pixelPos.y);
     }
 
+    public void setPixelPosition(Point pos) {
+        pixelPos.x = pos.x;
+        pixelPos.y = pos.y;
+    }
+
     public Point2D.Float getPixelPos2D() {
         return pixelPos;
     }
@@ -222,7 +227,8 @@ public class MoveManager {
         stationaryObjects.add(pos);
     }
 
-    public void setPixelPos(Point2D.Float pos) {
+    public void setPixelPos(
+            Point2D.Float pos) {
         pixelPos = pos;
     }
 }
