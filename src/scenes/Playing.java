@@ -52,6 +52,8 @@ public class Playing {
     private int countOrange = 0;
     private OrangeAllies orangeAllies;
     private Point playerPixel;
+    private int countPurple = 0;
+    private PurpleAllies purpleAllies;
     public Playing() {
         initGenerate();
 
@@ -122,21 +124,28 @@ public class Playing {
         List<WeightedAlly> weightedAllies = new ArrayList<>();
         weightedAllies.add(new WeightedAlly("Blue", 20));
         if (countBrown < 1) {
-            weightedAllies.add(new WeightedAlly("Brown", 30));
+            weightedAllies.add(new WeightedAlly("Brown", 0));
             countBrown++;
         } else {
             weightedAllies.add(new WeightedAlly("Brown", 0));
         }
 
         if (countOrange < 1) {
-            weightedAllies.add(new WeightedAlly("Orange", 20));
+            weightedAllies.add(new WeightedAlly("Orange", 0));
             countOrange++;
         } else {
             weightedAllies.add(new WeightedAlly("Orange", 0));
         }
 
+        if (countPurple < 1) {
+            weightedAllies.add(new WeightedAlly("Purple", 80));
+            countPurple++;
+        } else {
+            weightedAllies.add(new WeightedAlly("Purple", 0));
+        }
 
-        weightedAllies.add(new WeightedAlly("Purple", 30));
+
+        weightedAllies.add(new WeightedAlly("Purple", 0));
 
         int totalWeight = 0;
         for (WeightedAlly wa : weightedAllies) {
@@ -162,8 +171,8 @@ public class Playing {
             brownAllies = new BrownAllies(spawnX, spawnY,playerManager);
             return brownAllies;
         } else if (selectedType.equals("Purple")) {
-
-            return new PurpleAllies(spawnX, spawnY);
+            purpleAllies = new PurpleAllies(spawnX, spawnY,playerManager);
+            return purpleAllies;
         } else if (selectedType.equals("Orange")) {
             orangeAllies = new OrangeAllies(spawnX,spawnY, playerManager);
             return orangeAllies;
@@ -343,47 +352,24 @@ public class Playing {
 
     public void onMouseClick(java.awt.event.MouseEvent e) {
         targetPosition = new Point(e.getX() / TILE_SIZE, e.getY() / TILE_SIZE);
-        assignTargetPositions(targetPosition);
-    }
-
-    private void assignTargetPositions(Point center) {
-        List<Point> positions = calculateFormation(center);
-        playerManager.setTarget(positions.get(0));
-        for (int i = 0; i < alliesMoveManager.size(); i++) {
-            alliesMoveManager.get(i).setTarget(positions.get(i + 1));
+        if (orangeAllies == null || !orangeAllies.isUseSkill) {
+            assignTargetPositions(targetPosition);
+        } else {
+            orangeAllies.setUseSkill(false);
+            assignTargetPositions(targetPosition);
         }
     }
 
+    private void assignTargetPositions(Point center) {
 
-//    private void spawnAlly() {
-//        Random random = new Random();
-//        int spawnX, spawnY;
-//        Point spawnPoint;
-//        int attempt = 0;
-//        do {
-//            spawnX = random.nextInt(ROWS);
-//            spawnY = random.nextInt(COLS);
-//            spawnPoint = new Point(spawnX, spawnY);
-//            attempt++;
-//            if (attempt > 100) {
-//                return;
-//            }
-//        } while (!isValidPosition(spawnPoint));
-//        Allies bluAllies = new BlueAllies(spawnX, spawnY);
-//        alliesList.add(bluAllies);
-//        alliesManagers.add(new MoveManager(bluAllies));
-//
-//    }
-//
-//
-//    public void timeSpawnAllies() {
-//        new Timer(15000, e -> {
-//            if (alliesList.size() < noOfAllies) {
-//                spawnAlly();
-//            }
-//        }).start();
-//    }
+            List<Point> positions = calculateFormation(center);
+            playerManager.setTarget(positions.get(0));
+            for (int i = 0; i < alliesMoveManager.size(); i++) {
+                alliesMoveManager.get(i).setTarget(positions.get(i + 1));
+            }
 
+
+    }
 
     public BrownAllies getBrownAllies() {
         return brownAllies;
@@ -391,5 +377,9 @@ public class Playing {
 
     public OrangeAllies getOrangeAllies() {
         return orangeAllies;
+    }
+
+    public PurpleAllies getPurpleAllies() {
+        return purpleAllies;
     }
 }

@@ -2,6 +2,7 @@ package controller;
 
 import entity.MovedObject.BrownAllies;
 import entity.MovedObject.OrangeAllies;
+import entity.MovedObject.PurpleAllies;
 import scenes.Playing;
 
 import java.awt.event.KeyEvent;
@@ -22,6 +23,7 @@ public class KeyHandler implements KeyListener {
     public void keyPressed(KeyEvent e) {
         BrownAllies brownAllies = playing.getBrownAllies();
         OrangeAllies orangeAllies = playing.getOrangeAllies();
+        PurpleAllies purpleAllies = playing.getPurpleAllies();
         int code = e.getKeyCode();
 
         if (code == KeyEvent.VK_S && brownAllies != null) {
@@ -34,7 +36,15 @@ public class KeyHandler implements KeyListener {
         if (code == KeyEvent.VK_A && orangeAllies != null) {
             orangeAllies.useSkill();
             System.out.println("A is pressed");
+            orangeAllies.setUseSkill(true);
         }
+
+        if (code == KeyEvent.VK_D && purpleAllies != null) {
+            purpleAllies.bless();
+            System.out.println("D is pressed");
+
+        }
+
 
     }
 

@@ -33,14 +33,6 @@ public class Player implements ObjectCanMove {
     public void takeDamage(int damage) { health -= damage; }
     public float getSpeed() { return speed; }
     public void setSpeed(float newSpeed) { this.speed = newSpeed; }
-    
- 
-
-    public void draw(Graphics g, int size) {
-
-    }
-
-
 
     public void setEmpDisabled(boolean disabled) {
         skillActive = false;

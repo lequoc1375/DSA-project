@@ -1,6 +1,7 @@
 package entity.MovedObject;
 
 import controller.MouseHandler;
+import main.GamePanel;
 import manager.MoveManager;
 
 import javax.swing.*;
@@ -14,7 +15,7 @@ public class OrangeAllies extends Allies {
     private boolean isTeleportCooldown = false;
     private Timer teleportCooldownTimer;
     private final double teleportRange = 120.0;
-
+    public boolean isUseSkill = false;
     private MoveManager player;
 
     public OrangeAllies(int x, int y, MoveManager player) {
@@ -22,46 +23,41 @@ public class OrangeAllies extends Allies {
         this.player = player;
     }
 
+
     public void useSkill() {
         if (isTeleportCooldown) return;
 
-        // Lấy tọa độ trung tâm của player (theo pixel)
-        Point2D.Float playerPos = player. getPixelPos2D();
-        float playerCenterX = playerPos.x;
-        float playerCenterY = playerPos.y;
+
+        Point2D.Float playerPos = player.getPixelPos2D();
+        float px = playerPos.x, py = playerPos.y;
 
 
-        float dx = mouseX - playerCenterX;
-        float dy = mouseY - playerCenterY;
-        double distance = Math.sqrt(dx * dx + dy * dy);
-
+        float dx = mouseX - px;
+        float dy = mouseY - py;
+        double distance = Math.hypot(dx, dy);
         if (distance == 0) return;
 
-        double targetX, targetY;
 
-        if (distance <= teleportRange) {
-            targetX = mouseX;
-            targetY = mouseY;
-        } else {
-
-            double dirX = dx / distance;
-            double dirY = dy / distance;
-
-            targetX = playerCenterX + dirX * teleportRange;
-            targetY = playerCenterY + dirY * teleportRange;
-        }
+        double targetX = px + dx / distance * Math.min(distance, teleportRange);
+        double targetY = py + dy / distance * Math.min(distance, teleportRange);
 
 
-        player.setPixelPos(new Point2D.Float((float) targetX, (float) targetY));
-        this.x = (int) targetX;
-        this.y = (int) targetY;
+        int gridX = (int)(targetX / GamePanel.TILE_SIZE);
+        int gridY = (int)(targetY / GamePanel.TILE_SIZE);
+        Point newGrid = new Point(gridX, gridY);
 
-        System.out.println("Teleported to: " + targetX + ", " + targetY);
 
-        startTeleportCooldown();
+        player.teleportTo(newGrid);
+
+
+        isUseSkill = false;
+        isTeleportCooldown = true;
+        new Timer(3000, e -> isTeleportCooldown = false).start();
     }
 
+
     private void startTeleportCooldown() {
+        isUseSkill = false;
         isTeleportCooldown = true;
         teleportCooldownTimer = new Timer(3000, e -> isTeleportCooldown = false);
         teleportCooldownTimer.setRepeats(false);
@@ -77,5 +73,9 @@ public class OrangeAllies extends Allies {
     @Override
     public void update() {
         super.update();
+    }
+
+    public void setUseSkill(boolean useSkill) {
+        isUseSkill = useSkill;
     }
 }

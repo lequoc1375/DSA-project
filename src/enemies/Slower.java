@@ -1,6 +1,8 @@
 package enemies;
 
 import entity.MovedObject.Player;
+import entity.MovedObject.PurpleAllies;
+
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
@@ -11,7 +13,7 @@ public class Slower extends Enemy {
     private boolean isSlowed = false;
     private boolean isOnCooldown = false;
     private Player player;
-
+    float originSpeed = Player.speed;
     public Slower(int x, int y, int health, float fireRate, Player player) {
         super(x, y, health, fireRate, new Color(204, 153, 0));
         this.player = player;
@@ -19,16 +21,16 @@ public class Slower extends Enemy {
 
     @Override
     public void attack() {
-        if (isOnCooldown)
+        if (isOnCooldown || PurpleAllies.isBlessing)
             return;
 
         isSlowed = true;
         isOnCooldown = true;
-        float originSpeed = Player.speed;
+
 
         player.setSpeed(80);
 
-        effectTimer = new Timer(6000, (ActionEvent e) -> {
+        effectTimer = new Timer(10000, (ActionEvent e) -> {
             player.setSpeed(originSpeed);
             isSlowed = false;
 
@@ -47,6 +49,15 @@ public class Slower extends Enemy {
     @Override
     public void update() {
         super.update();
+        System.out.println(Player.speed);
+        if (isSlowed && PurpleAllies.isBlessing) {
+            if (effectTimer != null && effectTimer.isRunning()) {
+                effectTimer.stop();
+            }
+
+            player.setSpeed(originSpeed);
+            isSlowed = false;
+        }
 
         if (!isOnCooldown && !isSlowed) {
             attack();
