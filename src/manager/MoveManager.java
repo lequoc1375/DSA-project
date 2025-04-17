@@ -231,4 +231,33 @@ public class MoveManager {
             Point2D.Float pos) {
         pixelPos = pos;
     }
+
+    public void stopMoving() {
+        isMoving = false;
+        targetPos = null;
+        stuckCounter = 0;
+    }
+
+    public void teleportTo(Point newGrid) {
+
+        updateObjectCount(currentGrid, -1);
+        reservedPositions.remove(currentGrid);
+
+
+        currentGrid = newGrid;
+        movingObject.setPosition(newGrid);
+
+        pixelPos.x = newGrid.x * TILE_SIZE + TILE_SIZE / 2f;
+        pixelPos.y = newGrid.y * TILE_SIZE + TILE_SIZE / 2f;
+
+
+        updateObjectCount(currentGrid, 1);
+        reservedPositions.add(currentGrid);
+
+
+        isMoving = false;
+        targetPos = null;
+        stuckCounter = 0;
+    }
+
 }

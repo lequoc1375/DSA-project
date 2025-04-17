@@ -6,6 +6,7 @@ import entity.MovedObject.Player;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import javax.swing.Timer;
@@ -57,15 +58,21 @@ public class Boomer extends Enemy {
             attack();
         }
 
-        for (Boom boom : boomList) {
+        Iterator<Boom> iter = boomList.iterator();
+        while (iter.hasNext()) {
+            Boom boom = iter.next();
             Point boomTile = new Point(boom.getX() / TILE_SIZE, boom.getY() / TILE_SIZE);
+
             if (player.getPosition().equals(boomTile)) {
                 boom.triggerExplosion();
             }
-        }
-        boomList.removeIf(Boom::isExplosionOver);
 
+            if (boom.isExplosionOver()) {
+                iter.remove();
+            }
+        }
     }
+
 
     @Override
     public void render(Graphics g) {

@@ -22,7 +22,5 @@ public class MouseHandler extends MouseAdapter {
     public void mouseMoved(MouseEvent e) {
         mouseX = e.getX();
         mouseY = e.getY();
-        System.out.println("MouseX: " + mouseX);
-        System.out.println("MouseY: " + mouseY);
     }
 }
