@@ -18,10 +18,22 @@ public class BlueAllies extends Allies {
     private int attackRange = 150;
     private boolean isAttacking = false;
     private Timer attackTimer = null;
-
+    private boolean isEmpDisabled = false;
     public BlueAllies(int x, int y) {
         super(x, y, new Color(30, 144, 255));
         this.allyBullets = new ArrayList<>();
+    }
+
+    @Override
+    public void setWeaponDisabled(boolean disabled) {
+        super.setWeaponDisabled(disabled);
+        this.isEmpDisabled = disabled;
+         if (disabled) {
+             if (attackTimer != null && attackTimer.isRunning()) {
+                 attackTimer.stop();
+                 isAttacking = false;
+             }
+         }
     }
 
     private Enemy getNearestEnemy() {
@@ -59,9 +71,6 @@ public class BlueAllies extends Allies {
                 int targetX = target.getX();
                 int targetY = target.getY();
 
-                System.out.println("Ally Bullet Start Pos: (" + startX + ", " + startY + ")");
-                System.out.println("Ally Bullet Target Pos: (" + targetX + ", " + targetY + ")");
-
                 double dx = (targetX - startX) * TILE_SIZE + TILE_SIZE / 2.0;
                 double dy = (targetY - startY) * TILE_SIZE + TILE_SIZE / 2.0;
                 double distance = Math.sqrt(dx * dx + dy * dy);
@@ -88,10 +97,9 @@ public class BlueAllies extends Allies {
     public void update() {
         super.update();
 
-        if (getNearestEnemy() != null && !isAttacking) {
+        if (!isEmpDisabled && getNearestEnemy() != null && !isAttacking) {
             attack();
         }
-
 
         List<Bullet> toRemove = new ArrayList<>();
         for (Bullet bullet : allyBullets) {

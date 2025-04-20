@@ -11,7 +11,7 @@ public  class Allies  implements ObjectCanMove{
     private Point posAllies;
     private Color color;
     public static final float HITBOX_SIZE = 1.2f;
-    public boolean skillActive = true;
+    public boolean skillActive = false;
     public int x, y;
     public Allies(int x, int y, Color color) {
         this.posAllies = new Point(x, y); 
@@ -78,5 +78,4 @@ public  class Allies  implements ObjectCanMove{
     public EMPDisabler getEmpSource() {
         return empSource;
     }
-
 }

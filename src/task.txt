@@ -15,4 +15,5 @@
 18/3. Blue allies (done)
 14/4. Brown (done)
 
-20/4. update logic skill enemies
+20/4. update logic skill enemies (done)
+20/4. Update effect skill on allies

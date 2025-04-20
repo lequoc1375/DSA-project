@@ -10,7 +10,7 @@ public class PurpleAllies extends Allies {
     public static boolean isBlessing = false;
     public boolean isCooldown = false;
     private Timer cooldownTimer;
-
+    private boolean isBlessingActive = false;
     public PurpleAllies(int x, int y, MoveManager player) {
         super(x, y, new Color(128, 0, 128)); // Màu tím
         this.player = player;
@@ -18,10 +18,7 @@ public class PurpleAllies extends Allies {
 
     public void bless() {
         if (isCooldown) return;
-
         isBlessing = true;
-
-
         Timer blessingTimer = new Timer(5000, e -> isBlessing = false);
         blessingTimer.setRepeats(false);
         blessingTimer.start();
@@ -32,7 +29,7 @@ public class PurpleAllies extends Allies {
     private void startCooldown() {
         isCooldown = true;
 
-        cooldownTimer = new Timer(13000, (ActionEvent event) -> {
+        cooldownTimer = new Timer(1000, (ActionEvent event) -> {
             isCooldown = false;
         });
         cooldownTimer.setRepeats(false);
@@ -44,7 +41,7 @@ public class PurpleAllies extends Allies {
         super.draw(g, x, y);
 
         if (isBlessing) {
-            g.setColor(Color.YELLOW);
+            g.setColor(Color.GREEN);
             int playerCenterX = player.getPixelPosition().x;
             int playerCenterY = player.getPixelPosition().y;
             int radius = 16;

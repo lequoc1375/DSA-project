@@ -26,16 +26,16 @@ public class KeyHandler implements KeyListener {
         PurpleAllies purpleAllies = playing.getPurpleAllies();
         int code = e.getKeyCode();
 
-        if (code == KeyEvent.VK_S && brownAllies != null) {
+        if (code == KeyEvent.VK_S && brownAllies != null && brownAllies.isEmpDisabled() == false) {
             brownAllies.useSkill();
         }
 
-        if (code == KeyEvent.VK_A && orangeAllies != null) {
+        if (code == KeyEvent.VK_A && orangeAllies != null && orangeAllies.isEmpDisabled() == false) {
             orangeAllies.useSkill();
             orangeAllies.setUseSkill(true);
         }
 
-        if (code == KeyEvent.VK_D && purpleAllies != null) {
+        if (code == KeyEvent.VK_D && purpleAllies != null && purpleAllies.isEmpDisabled() == false) {
             purpleAllies.bless();
         }
 
