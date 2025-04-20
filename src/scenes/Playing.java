@@ -56,7 +56,6 @@ public class Playing {
     private PurpleAllies purpleAllies;
     public Playing() {
         initGenerate();
-
         new Timer(500, e -> turret.fireBullet(player.getPosition())).start();
         new Timer(7654, e -> SpawnEnemies()).start();
         new Timer(15000, e -> SpawnAllies()).start();
@@ -69,13 +68,13 @@ public class Playing {
         int y = r.nextInt(ROWS);
         switch (r.nextInt(4) + 1) {
             case 1:
-                if (countBreaker < 1) {
-                    enemiesManager.add(new EMPDisabler(x, y, 100, 2500, player, alliesManager.getAlliesList()));
+                if (countBreaker < 2) {
+                    enemiesManager.add(new EMPDisabler(x, y, 100, 2500, playerManager, () -> alliesManager.getAlliesList(), player,() -> alliesMoveManager));
                     countBreaker++;
                 }
                 break;
             case 2:
-                if (countBoomer < 3) {
+                if (countBoomer < 0) {
                     enemiesManager.add(new Boomer(x, y, 75, 20000, player)); // boomer
                     countBoomer++;
                 }

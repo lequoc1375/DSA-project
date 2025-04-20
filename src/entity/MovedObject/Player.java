@@ -1,5 +1,7 @@
 package entity.MovedObject;
 
+import enemies.EMPDisabler;
+
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Point;
@@ -35,7 +37,8 @@ public class Player implements ObjectCanMove {
     public void setSpeed(float newSpeed) { this.speed = newSpeed; }
 
     public void setEmpDisabled(boolean disabled) {
-        skillActive = false;
+
+        this.skillActive = disabled;
     }
 
     public int getWidth() {
@@ -50,5 +53,13 @@ public class Player implements ObjectCanMove {
         return skillActive;
     }
 
+    private EMPDisabler empSource;
 
+    public void setEmpSource(EMPDisabler source) {
+        this.empSource = source;
+    }
+
+    public EMPDisabler getEmpSource() {
+        return empSource;
+    }
 }

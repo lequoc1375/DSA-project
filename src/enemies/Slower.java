@@ -49,7 +49,6 @@ public class Slower extends Enemy {
     @Override
     public void update() {
         super.update();
-        System.out.println(Player.speed);
         if (isSlowed && PurpleAllies.isBlessing) {
             if (effectTimer != null && effectTimer.isRunning()) {
                 effectTimer.stop();
