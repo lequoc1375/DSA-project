@@ -17,20 +17,16 @@ public class OrangeAllies extends Allies {
     private final double teleportRange = 120.0;
     public boolean isUseSkill = false;
     private MoveManager player;
-
+    private boolean isEmpDisabled = false;
     public OrangeAllies(int x, int y, MoveManager player) {
         super(x, y, new Color(255, 165, 0));
         this.player = player;
     }
-
-
     public void useSkill() {
         if (isTeleportCooldown) return;
 
-
         Point2D.Float playerPos = player.getPixelPos2D();
         float px = playerPos.x, py = playerPos.y;
-
 
         float dx = mouseX - px;
         float dy = mouseY - py;

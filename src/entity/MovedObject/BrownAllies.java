@@ -6,36 +6,42 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 
-import static main.GamePanel.TILE_SIZE;
-
 public class BrownAllies extends Allies {
-    private boolean isActive = false; // Khiên đang bật
-    private boolean isCooldown = false; // Có đang trong cooldown không
+    private boolean isActive = false;
+    private boolean isCooldown = false;
     private Timer cooldownTimer;
     private Timer shieldDurationTimer;
     private MoveManager player;
+
     public BrownAllies(int x, int y, MoveManager playerMove) {
         super(x, y, new Color(139, 69, 19));
         this.player = playerMove;
     }
 
-    public void useSkill() {
-        if (!isCooldown && !isActive) {
-            isActive = true;
-
-
-            shieldDurationTimer = new Timer(5000, (ActionEvent e) -> {
-                deactivateShield();
-            });
-            shieldDurationTimer.setRepeats(false);
-            shieldDurationTimer.start();
-        } else if (isCooldown) {
-            System.out.println("Skill is on cooldown!");
-        } else {
-            System.out.println("Shield is already active!");
+    @Override
+    public void setWeaponDisabled(boolean disabled) {
+        super.setWeaponDisabled(disabled);
+        if (disabled && isActive) {
+            breakShieldEarly();
         }
     }
 
+    public void useSkill() {
+        if (isEmpDisabled()) {
+            System.out.println("Shield skill disabled by EMP!");
+            return;
+        }
+        if (!isCooldown && !isActive) {
+            isActive = true;
+            shieldDurationTimer = new Timer(50000, (ActionEvent e) -> deactivateShield());
+            shieldDurationTimer.setRepeats(false);
+            shieldDurationTimer.start();
+        } else if (isCooldown) {
+            System.out.println("Shield is on cooldown!");
+        } else {
+            System.out.println("Shield already active!");
+        }
+    }
 
     private void deactivateShield() {
         isActive = false;
@@ -44,9 +50,7 @@ public class BrownAllies extends Allies {
 
     private void startCooldown() {
         isCooldown = true;
-        cooldownTimer = new Timer(13000, (ActionEvent e) -> {
-            isCooldown = false;
-        });
+        cooldownTimer = new Timer(2000, (ActionEvent e) -> isCooldown = false);
         cooldownTimer.setRepeats(false);
         cooldownTimer.start();
     }
@@ -56,11 +60,9 @@ public class BrownAllies extends Allies {
         super.draw(g, x, y);
         if (isActive) {
             g.setColor(Color.BLUE);
-            int playerCenterX = player.getPixelPosition().x ;
-            int playerCenterY = player.getPixelPosition().y ;
-            int radius = 20;
-            g.drawOval(playerCenterX - radius / 2, playerCenterY - radius / 2, radius, radius);
-
+            Point p = player.getPixelPosition();
+            int cx = p.x, cy = p.y, r = 20;
+            g.drawOval(cx - r/2, cy - r/2, r, r);
         }
     }
 
@@ -69,19 +71,14 @@ public class BrownAllies extends Allies {
         super.update();
     }
 
-
     public void breakShieldEarly() {
         if (isActive) {
             shieldDurationTimer.stop();
             deactivateShield();
+            System.out.println("Shield broken by EMP!");
         }
     }
 
-    public boolean isShieldActive() {
-        return isActive;
-    }
-
-    public boolean isSkillOnCooldown() {
-        return isCooldown;
-    }
+    public boolean isShieldActive()    { return isActive; }
+    public boolean isSkillOnCooldown() { return isCooldown; }
 }

@@ -3,10 +3,12 @@ package manager;
 import entity.Barrier;
 import entity.MovedObject.ObjectCanMove;
 import entity.MovedObject.Player;
+
 import java.awt.*;
 import java.awt.geom.Point2D;
-import java.util.*;
 import java.util.List;
+import java.util.Queue;
+import java.util.*;
 
 public class MoveManager {
     private static final int ROWS = 60;
@@ -17,23 +19,22 @@ public class MoveManager {
     private static final List<Point> stationaryObjects = new ArrayList<>();
     private static final Map<Point, Integer> objectCount = new HashMap<>();
     private static final Set<Point> reservedPositions = new HashSet<>();
-   
+
     private final Point[][] flowField = new Point[ROWS][COLS];
+    private final ObjectCanMove movingObject;
     private Point targetPos;
     private boolean isMoving;
-    private final ObjectCanMove movingObject;
     private int stuckCounter = 0;
     private Point currentGrid;
     private Point2D.Float pixelPos;
 
     public MoveManager(ObjectCanMove movingObject) {
-        
+
         this.movingObject = movingObject;
         this.isMoving = false;
         Point initialPos = movingObject.getPosition();
         currentGrid = initialPos;
-        pixelPos = new Point2D.Float(initialPos.x * TILE_SIZE + TILE_SIZE / 2f,
-                initialPos.y * TILE_SIZE + TILE_SIZE / 2f);
+        pixelPos = new Point2D.Float(initialPos.x * TILE_SIZE + TILE_SIZE / 2f, initialPos.y * TILE_SIZE + TILE_SIZE / 2f);
         updateObjectCount(initialPos, 1);
         reservedPositions.add(initialPos);
         initializeCostMap();
@@ -60,7 +61,7 @@ public class MoveManager {
     }
 
     private void computeFlowField() {
-        
+
         for (int r = 0; r < ROWS; r++) {
             for (int c = 0; c < COLS; c++) {
                 flowField[r][c] = null;
@@ -75,7 +76,7 @@ public class MoveManager {
         distances[targetPos.y][targetPos.x] = 0;
         queue.add(targetPos);
 
-        int[][] directions = { { 0, 1 }, { 1, 0 }, { 0, -1 }, { -1, 0 }, { -1, -1 }, { -1, 1 }, { 1, -1 }, { 1, 1 } };
+        int[][] directions = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}, {-1, -1}, {-1, 1}, {1, -1}, {1, 1}};
 
         while (!queue.isEmpty()) {
             Point current = queue.poll();
@@ -120,14 +121,14 @@ public class MoveManager {
 
         float targetPixelX = nextGrid.x * TILE_SIZE + TILE_SIZE / 2f;
         float targetPixelY = nextGrid.y * TILE_SIZE + TILE_SIZE / 2f;
-     
+
         float dx = targetPixelX - pixelPos.x;
         float dy = targetPixelY - pixelPos.y;
         float distance = (float) Math.sqrt(dx * dx + dy * dy);
 
-        if (distance < Player.speed * deltaTime) { 
-            
-            float t = (Player.speed * deltaTime) / distance; 
+        if (distance < Player.speed * deltaTime) {
+
+            float t = (Player.speed * deltaTime) / distance;
             pixelPos.x = pixelPos.x + dx * t;
             pixelPos.y = pixelPos.y + dy * t;
 
@@ -140,11 +141,11 @@ public class MoveManager {
                 isMoving = false;
             }
         } else {
-           
-            float seekX = (dx / distance) * Player.speed; 
+
+            float seekX = (dx / distance) * Player.speed;
             float seekY = (dy / distance) * Player.speed;
 
-            Point2D.Float separationVector = new Point2D.Float(0, 0); 
+            Point2D.Float separationVector = new Point2D.Float(0, 0);
             float separationDistance = 2 * TILE_SIZE;
             for (MoveManager other : allManagers) {
                 if (other != this) {
@@ -155,29 +156,28 @@ public class MoveManager {
                     if (sepDistance < separationDistance && sepDistance > 0) {
                         float force = Math.min((separationDistance - sepDistance) / sepDistance, 1.0f) * 0.5f;
                         separationVector.x += (sepDx / sepDistance) * force;
-                        separationVector.y += (sepDy / sepDistance) * force ;
+                        separationVector.y += (sepDy / sepDistance) * force;
                     }
                 }
             }
 
-            float sepMagnitude = (float) Math
-                    .sqrt(separationVector.x * separationVector.x + separationVector.y * separationVector.y);
+            float sepMagnitude = (float) Math.sqrt(separationVector.x * separationVector.x + separationVector.y * separationVector.y);
             float sepX = 0, sepY = 0;
-            if (sepMagnitude > 0) { 
-                float separationSpeed = Player.speed * 0.3f; 
-                if (sepMagnitude > 0) { 
+            if (sepMagnitude > 0) {
+                float separationSpeed = Player.speed * 0.3f;
+                if (sepMagnitude > 0) {
                     sepX = (separationVector.x / sepMagnitude) * Math.min(separationSpeed, sepMagnitude);
 
                     sepY = (separationVector.y / sepMagnitude) * Math.min(separationSpeed, sepMagnitude);
                 }
             }
 
-            float velX = seekX + sepX; 
+            float velX = seekX + sepX;
             float velY = seekY + sepY;
 
             float velMagnitude = (float) Math.sqrt(velX * velX + velY * velY);
             if (velMagnitude > Player.speed) {
-                velX = (velX / velMagnitude) * Player.speed; 
+                velX = (velX / velMagnitude) * Player.speed;
                 velY = (velY / velMagnitude) * Player.speed;
             }
 
@@ -188,8 +188,7 @@ public class MoveManager {
 
     private boolean canMoveTo(Point pos) {
         int currentCount = objectCount.getOrDefault(pos, 0);
-        return isValidPosition(pos.x, pos.y) && !Barrier.isObstacle(pos.x, pos.y) &&
-                currentCount < MAX_OBJECTS_PER_CELL && !reservedPositions.contains(pos);
+        return isValidPosition(pos.x, pos.y) && !Barrier.isObstacle(pos.x, pos.y) && currentCount < MAX_OBJECTS_PER_CELL && !reservedPositions.contains(pos);
     }
 
     private void updateObjectCount(Point pos, int delta) {
@@ -199,7 +198,7 @@ public class MoveManager {
         }
         objectCount.put(pos, count);
         int baseCost = stationaryObjects.contains(pos) ? 1000 : 1;
-        costMap[pos.y][pos.x] = baseCost + 100 * count; 
+        costMap[pos.y][pos.x] = baseCost + 100 * count;
     }
 
     private boolean isValidPosition(int x, int y) {
@@ -227,8 +226,7 @@ public class MoveManager {
         stationaryObjects.add(pos);
     }
 
-    public void setPixelPos(
-            Point2D.Float pos) {
+    public void setPixelPos(Point2D.Float pos) {
         pixelPos = pos;
     }
 
@@ -250,10 +248,8 @@ public class MoveManager {
         pixelPos.x = newGrid.x * TILE_SIZE + TILE_SIZE / 2f;
         pixelPos.y = newGrid.y * TILE_SIZE + TILE_SIZE / 2f;
 
-
         updateObjectCount(currentGrid, 1);
         reservedPositions.add(currentGrid);
-
 
         isMoving = false;
         targetPos = null;

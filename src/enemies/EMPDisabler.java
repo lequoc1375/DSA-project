@@ -2,6 +2,7 @@ package enemies;
 
 import entity.MovedObject.Allies;
 import entity.MovedObject.Player;
+import entity.MovedObject.PurpleAllies;
 import manager.MoveManager;
 
 import java.awt.*;
@@ -59,6 +60,16 @@ public class EMPDisabler extends Enemy {
     }
 
     private void applyEMPEffect(List<Allies> allies, List<MoveManager> alliesManager) {
+
+        if (PurpleAllies.isBlessing) {
+            // Gỡ EMP cho player
+            player1.setEmpDisabled(false);
+            // Gỡ EMP cho tất cả allies
+            for (Allies ally : allies) {
+                ally.setWeaponDisabled(false);
+            }
+            return;
+        }
         int centerX = x * 16 + width / 2;
         int centerY = y * 16 + height / 2;
 
@@ -143,7 +154,7 @@ public class EMPDisabler extends Enemy {
 
     private void activateEMP() {
         empActive = true;
-        activationTimer = new Timer(10000, (ActionEvent e) -> {
+        activationTimer = new Timer(20000, (ActionEvent e) -> {
             empActive = false;
             activationTimer.stop();
             startCooldown();
@@ -153,7 +164,7 @@ public class EMPDisabler extends Enemy {
     }
 
     private void startCooldown() {
-        cooldownTimer = new Timer(15000, (ActionEvent e) -> {
+        cooldownTimer = new Timer(5000, (ActionEvent e) -> {
             cooldownTimer.stop();
             activateEMP();
         });
