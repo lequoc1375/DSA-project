@@ -2,28 +2,35 @@ package enemies;
 
 import entity.MovedObject.Allies;
 import entity.MovedObject.Player;
+import manager.MoveManager;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.List;
+import java.util.function.Supplier;
 import javax.swing.Timer;
 
 public class EMPDisabler extends Enemy {
     private Timer activationTimer;
     private Timer cooldownTimer;
     private boolean empActive = false;
-    private final int empRadius = 400; 
-    private Player player;
-    private List<Allies> allies;
-    private int width = 8, height = 8;
-   
-    private final int shieldDiameter = 350;
+    private final int empRadius = 200;
+    private final int shieldDiameter = 30;
     private final int shieldRadius = shieldDiameter / 2;
 
-    public EMPDisabler(int x, int y, int health, float fireRate, Player player, List<Allies> allies) {
-        super(x, y, health, fireRate, new Color(0, 191, 255)); 
+    private MoveManager player;
+    private Player player1;
+    private Supplier<List<Allies>> alliesSupplier;
+    private Supplier<List<MoveManager>> alliesManagerSupplier;
+    private int width = 8, height = 8;
+
+    public EMPDisabler(int x, int y, int health, float fireRate, MoveManager player, Supplier<List<Allies>> alliesSupplier, Player player1, Supplier<List<MoveManager>> alliesManagerSupplier) {
+        super(x, y, health, fireRate, new Color(0, 191, 255));
         this.player = player;
-        this.allies = allies;
-        startCooldown(); 
+        this.alliesSupplier = alliesSupplier;
+        this.player1 = player1;
+        this.alliesManagerSupplier = alliesManagerSupplier;
+        startCooldown();
     }
 
     @Override
@@ -34,12 +41,53 @@ public class EMPDisabler extends Enemy {
 
     @Override
     public void attack() {
+        List<Allies> allies = alliesSupplier.get();
         if (empActive) {
-            applyEMPEffect();
+            applyEMPEffect(allies, alliesManagerSupplier.get());
         } else {
-            player.setEmpDisabled(false);
+            if (player1.getEmpSource() == this) {
+                player1.setEmpDisabled(false);
+                player1.setEmpSource(null);
+            }
             for (Allies ally : allies) {
+                if (ally.getEmpSource() == this) {
+                    ally.setWeaponDisabled(false);
+                    ally.setEmpSource(null);
+                }
+            }
+        }
+    }
+
+    private void applyEMPEffect(List<Allies> allies, List<MoveManager> alliesManager) {
+        int centerX = x * 16 + width / 2;
+        int centerY = y * 16 + height / 2;
+
+        int playerCenterX = player.getPixelPosition().x;
+        int playerCenterY = player.getPixelPosition().y;
+        double distancePlayer = Point.distance(centerX, centerY, playerCenterX, playerCenterY);
+
+        if (distancePlayer <= empRadius) {
+            player1.setEmpDisabled(true);
+            player1.setEmpSource(this);
+        } else if (player1.getEmpSource() == this) {
+            player1.setEmpDisabled(false);
+            player1.setEmpSource(null);
+        }
+
+        for (int i = 0; i < allies.size(); i++) {
+            Allies ally = allies.get(i);
+            MoveManager allyMove = alliesManager.get(i);
+
+            int allyCenterX = allyMove.getPixelPosition().x;
+            int allyCenterY = allyMove.getPixelPosition().y;
+            double distanceAlly = Point.distance(centerX, centerY, allyCenterX, allyCenterY);
+
+            if (distanceAlly <= empRadius) {
+                ally.setWeaponDisabled(true);
+                ally.setEmpSource(this);
+            } else if (ally.getEmpSource() == this) {
                 ally.setWeaponDisabled(false);
+                ally.setEmpSource(null);
             }
         }
     }
@@ -48,26 +96,43 @@ public class EMPDisabler extends Enemy {
     public void render(Graphics g) {
         super.render(g);
         Graphics2D g2d = (Graphics2D) g;
+
+        int centerX = x * 16 + width / 2;
+        int centerY = y * 16 + height / 2;
+
         if (empActive) {
-            g2d.setColor(new Color(0, 191, 255, 100));
-            g2d.drawOval(x*16 - empRadius / 2, y*16 - empRadius / 2, empRadius, empRadius);
-            drawLightningEffect(g2d, x*16 + width / 2, y*16 + height / 2, empRadius / 2);
+            g2d.setColor(Color.RED);
+            g2d.drawOval(centerX - empRadius, centerY - empRadius, empRadius * 2, empRadius * 2);
+            drawLightningEffect(g2d, centerX, centerY, empRadius);
         }
-        
-       
-        if (player.isEmpDisabled()) {
-            int playerCenterX = player.getX()*16 + player.getWidth() / 2;
-            int playerCenterY = player.getY()*16 + player.getHeight() / 2;
-            g2d.setColor(new Color(0, 191, 255, 100));
+
+        if (player1.isEmpDisabled() && player1.getEmpSource() == this) {
+            int playerCenterX = player.getPixelPosition().x;
+            int playerCenterY = player.getPixelPosition().y;
+            g2d.setColor(Color.RED);
             g2d.drawOval(playerCenterX - shieldRadius, playerCenterY - shieldRadius, shieldDiameter, shieldDiameter);
             drawLightningEffect(g2d, playerCenterX, playerCenterY, shieldRadius);
         }
+
+        List<Allies> allies = alliesSupplier.get();
+        List<MoveManager> alliesManager = alliesManagerSupplier.get();
+
+        for (int i = 0; i < allies.size(); i++) {
+            Allies ally = allies.get(i);
+            MoveManager allyMove = alliesManager.get(i);
+
+            if (ally.isEmpDisabled() && ally.getEmpSource() == this) {
+                int allyCenterX = allyMove.getPixelPosition().x;
+                int allyCenterY = allyMove.getPixelPosition().y;
+                g2d.setColor(Color.CYAN);
+                g2d.drawOval(allyCenterX - shieldRadius, allyCenterY - shieldRadius, shieldDiameter, shieldDiameter);
+                drawLightningEffect(g2d, allyCenterX, allyCenterY, shieldRadius);
+            }
+        }
     }
 
-  
     private void drawLightningEffect(Graphics2D g2d, int centerX, int centerY, int maxLength) {
         g2d.setStroke(new BasicStroke(2));
-      
         for (int i = 0; i < 5; i++) {
             double angle = Math.random() * 2 * Math.PI;
             int endX = centerX + (int)(maxLength * Math.cos(angle));
@@ -76,34 +141,9 @@ public class EMPDisabler extends Enemy {
         }
     }
 
-    
-    private void applyEMPEffect() {
-        int centerX = x + width / 2;
-        int centerY = y + height / 2;
-        
-     
-        int playerCenterX = player.getX()*16 + player.getWidth() / 2;
-        int playerCenterY = player.getY()*16 + player.getHeight() / 2;
-        double distancePlayer = Point.distance(centerX, centerY, playerCenterX, playerCenterY);
-        if (distancePlayer <= empRadius) {
-            player.setEmpDisabled(true);
-        }
-
-       
-        for (Allies ally : allies) {
-            int allyCenterX = ally.getX() + ally.getWidth() / 2;
-            int allyCenterY = ally.getY() + ally.getHeight() / 2;
-            double distanceAlly = Point.distance(centerX, centerY, allyCenterX, allyCenterY);
-            if (distanceAlly <= empRadius) {
-                ally.setWeaponDisabled(true);
-            }
-        }
-    }
-
-
     private void activateEMP() {
         empActive = true;
-        activationTimer = new Timer(5000, (ActionEvent e) -> {
+        activationTimer = new Timer(10000, (ActionEvent e) -> {
             empActive = false;
             activationTimer.stop();
             startCooldown();
@@ -112,7 +152,6 @@ public class EMPDisabler extends Enemy {
         activationTimer.start();
     }
 
-    
     private void startCooldown() {
         cooldownTimer = new Timer(15000, (ActionEvent e) -> {
             cooldownTimer.stop();
@@ -122,7 +161,6 @@ public class EMPDisabler extends Enemy {
         cooldownTimer.start();
     }
 
-   
     public boolean isEMPActive() {
         return empActive;
     }

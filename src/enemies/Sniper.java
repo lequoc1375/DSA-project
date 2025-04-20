@@ -17,7 +17,7 @@ public class Sniper extends Enemy {
     private boolean showLaser = false;
     private int laserTargetX;
     private int laserTargetY;
-    private int attackRange = 300;
+    private int attackRange = 200;
     private boolean isAttacking = false;
     private Timer attackTimer = null;
     private List<Bullet> enemyBullets;

@@ -28,21 +28,15 @@ public class KeyHandler implements KeyListener {
 
         if (code == KeyEvent.VK_S && brownAllies != null) {
             brownAllies.useSkill();
-            System.out.println("S is pressed");
-        } else {
-            System.out.println("Bug");
         }
 
         if (code == KeyEvent.VK_A && orangeAllies != null) {
             orangeAllies.useSkill();
-            System.out.println("A is pressed");
             orangeAllies.setUseSkill(true);
         }
 
         if (code == KeyEvent.VK_D && purpleAllies != null) {
             purpleAllies.bless();
-            System.out.println("D is pressed");
-
         }
 
 

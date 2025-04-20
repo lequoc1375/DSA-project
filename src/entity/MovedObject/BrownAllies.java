@@ -21,7 +21,6 @@ public class BrownAllies extends Allies {
 
     public void useSkill() {
         if (!isCooldown && !isActive) {
-            System.out.println("Shield activated!");
             isActive = true;
 
 
@@ -39,7 +38,6 @@ public class BrownAllies extends Allies {
 
 
     private void deactivateShield() {
-        System.out.println("Shield deactivated. Cooldown begins.");
         isActive = false;
         startCooldown();
     }
@@ -48,7 +46,6 @@ public class BrownAllies extends Allies {
         isCooldown = true;
         cooldownTimer = new Timer(13000, (ActionEvent e) -> {
             isCooldown = false;
-            System.out.println("Skill is ready again!");
         });
         cooldownTimer.setRepeats(false);
         cooldownTimer.start();

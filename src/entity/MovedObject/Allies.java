@@ -1,5 +1,7 @@
 package entity.MovedObject;
 
+import enemies.EMPDisabler;
+
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Point;
@@ -62,4 +64,19 @@ public  class Allies  implements ObjectCanMove{
     public void update() {
 
     }
+
+    public boolean isEmpDisabled() {
+        return skillActive;
+    }
+
+    private EMPDisabler empSource;
+
+    public void setEmpSource(EMPDisabler source) {
+        this.empSource = source;
+    }
+
+    public EMPDisabler getEmpSource() {
+        return empSource;
+    }
+
 }
