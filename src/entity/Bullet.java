@@ -26,14 +26,13 @@ public class Bullet {
         return x < 0 || x >= COLS * TILE_SIZE || y < 0 || y >= ROWS * TILE_SIZE;
     }
 
-    public boolean hitsPlayer(Point playerPos) {
-        double px = playerPos.x * TILE_SIZE + TILE_SIZE / 2.0;
-        double py = playerPos.y * TILE_SIZE + TILE_SIZE / 2.0;
-        return Math.hypot(x - px, y - py) < SIZE / 2.0;
-    }
-
     public void draw(Graphics g) {
         g.setColor(Color.BLUE);
         g.fillOval((int) (x - SIZE / 2.0), (int) (y - SIZE / 2.0), SIZE, SIZE);
     }
+
+    public Rectangle getBounds() {
+        return new Rectangle((int) x, (int) y, SIZE, SIZE);
+    }
+
 }
