@@ -2,9 +2,7 @@ package entity.MovedObject;
 
 import enemies.EMPDisabler;
 
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Point;
+import java.awt.*;
 
 public class Player implements ObjectCanMove {
     private Point position;
@@ -12,10 +10,10 @@ public class Player implements ObjectCanMove {
     public static float speed = 120; 
     private boolean isSlowed = false;
     private boolean  skillActive = true;
-
+    private Rectangle bound;
     public Player(int x, int y) {
         this.position = new Point(x, y);
-        this.health = 10;
+        bound = new Rectangle();
     }
 
     @Override
@@ -30,23 +28,11 @@ public class Player implements ObjectCanMove {
 
     public int getX() { return position.x; }
     public int getY() { return position.y; }
-    public double getHealth() { return health; }
-    public void setHealth(double newHealth) { this.health = newHealth; }
-    public void takeDamage(int damage) { health -= damage; }
     public float getSpeed() { return speed; }
     public void setSpeed(float newSpeed) { this.speed = newSpeed; }
 
     public void setEmpDisabled(boolean disabled) {
-
         this.skillActive = disabled;
-    }
-
-    public int getWidth() {
-        return 8;
-    }
-
-    public int getHeight() {
-        return 8;
     }
 
     public boolean isEmpDisabled() {
@@ -62,4 +48,6 @@ public class Player implements ObjectCanMove {
     public EMPDisabler getEmpSource() {
         return empSource;
     }
+
+
 }

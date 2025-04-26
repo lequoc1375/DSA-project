@@ -9,6 +9,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import static main.GamePanel.TILE_SIZE;
 
@@ -96,13 +97,19 @@ public class Sniper extends Enemy {
             }
         } else {
             if (!isAttacking) {
-
                 attack();
             }
         }
 
-        for (Bullet bullet : enemyBullets) {
+        Iterator<Bullet> iterator = enemyBullets.iterator();
+        while (iterator.hasNext()) {
+            Bullet bullet = iterator.next();
             bullet.move();
+
+            if (bullet.getBounds().intersects(new Rectangle(player.getPixelPosition().x, player.getPixelPosition().y, 8, 8))) {
+                System.out.println("Player trúng đạn");
+                iterator.remove();
+            }
         }
     }
 
@@ -112,7 +119,7 @@ public class Sniper extends Enemy {
 
         if (showLaser) {
             Graphics2D g2d = (Graphics2D) g;
-            // Thiết lập các Rendering Hints để cải thiện chất lượng vẽ
+
             g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
             g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
@@ -123,11 +130,9 @@ public class Sniper extends Enemy {
             int targetX = player.getPixelPosition().x ;
             int targetY = player.getPixelPosition().y ;
 
-            // Tạo hiệu ứng gradient cho laser
             GradientPaint gp = new GradientPaint(centerX, centerY, Color.RED, targetX, targetY, Color.ORANGE, true);
             g2d.setPaint(gp);
 
-            // Dùng BasicStroke với độ dày 6 và đầu đường cong tròn để vẽ laser mượt mà
             g2d.setStroke(new BasicStroke(6, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
             g2d.drawLine(centerX, centerY, targetX, targetY);
         }

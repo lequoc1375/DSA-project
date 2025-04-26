@@ -7,6 +7,7 @@ import manager.EnemiesManager;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -71,8 +72,8 @@ public class BlueAllies extends Allies {
                 int targetX = target.getX();
                 int targetY = target.getY();
 
-                double dx = (targetX - startX) * TILE_SIZE + TILE_SIZE / 2.0;
-                double dy = (targetY - startY) * TILE_SIZE + TILE_SIZE / 2.0;
+                double dx = (targetX - startX) * TILE_SIZE + TILE_SIZE / 2;
+                double dy = (targetY - startY) * TILE_SIZE + TILE_SIZE / 2;
                 double distance = Math.sqrt(dx * dx + dy * dy);
                 if (distance != 0) {
                     dx /= distance;
@@ -85,7 +86,6 @@ public class BlueAllies extends Allies {
 
                 Bullet bullet = new Bullet(startPos, vx, vy);
                 allyBullets.add(bullet);
-                System.out.println("Firing bullet");
             }
             isAttacking = false;
         });
@@ -106,6 +106,15 @@ public class BlueAllies extends Allies {
             bullet.move();
             if (bullet.isOutOfBounds()) {
                 toRemove.add(bullet);
+                continue;
+            }
+
+            for (Enemy enemy : EnemiesManager.getEnemies()) {
+                if(bullet.getBounds().intersects(new Rectangle( enemy.getX() * TILE_SIZE + TILE_SIZE / 2,  enemy.getY() * TILE_SIZE + TILE_SIZE / 2, TILE_SIZE, TILE_SIZE))) {
+                    System.out.println("Enemies is attacked");
+                    toRemove.add(bullet);
+                    break;
+                }
             }
         }
         allyBullets.removeAll(toRemove);
