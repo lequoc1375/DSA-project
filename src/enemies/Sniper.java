@@ -22,11 +22,13 @@ public class Sniper extends Enemy {
     private boolean isAttacking = false;
     private Timer attackTimer = null;
     private List<Bullet> enemyBullets;
-
-    public Sniper(int x, int y, int health, float fireRate, MoveManager player) {
+    private Rectangle bulletRect;
+    private Player playerObject;
+    public Sniper(int x, int y, int health, float fireRate, MoveManager player, Player player1) {
         super(x, y, health, fireRate, new Color(139, 0, 0));
         this.player = player;
         enemyBullets = new ArrayList<>();
+        playerObject = player1;
     }
 
     private boolean isPlayerWithinRange() {
@@ -108,6 +110,7 @@ public class Sniper extends Enemy {
 
             if (bullet.getBounds().intersects(new Rectangle(player.getPixelPosition().x, player.getPixelPosition().y, 8, 8))) {
                 System.out.println("Player trúng đạn");
+                playerObject.playerIsHit();
                 iterator.remove();
             }
         }

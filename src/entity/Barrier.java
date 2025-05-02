@@ -1,11 +1,15 @@
 package entity;
 
+import main.GamePanel;
+
 import java.awt.Point;
 import java.util.*;
 
+import static main.GamePanel.TILE_SIZE;
+
 public class Barrier {
-    private static final int ROWS = 60;
-    private static final int COLS = 60;
+    private static final int ROWS = GamePanel.ROWS;
+    private static final int COLS = GamePanel.COLS;
     private static final int[][] costField = new int[ROWS][COLS];
     private List<Integer> count = new ArrayList<>();
 

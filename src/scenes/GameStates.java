@@ -1,7 +1,7 @@
 package scenes;
 
  public enum GameStates {
-	PLAYING, MENU, ROLL;
+	PLAYING, MENU, SETTINGS;
 
 	public static GameStates gameStates = MENU;
 

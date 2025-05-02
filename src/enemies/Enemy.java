@@ -43,7 +43,7 @@ public abstract class Enemy {
         int[] yPoints = new int[5];
 
         for (int i = 0; i < 5; i++) {
-            double currentAngle = Math.toRadians(72 * i + angle - 90); // Xoay thêm góc `angle`
+            double currentAngle = Math.toRadians(72 * i + angle - 90);
             xPoints[i] = centerX + (int) (radius * Math.cos(currentAngle));
             yPoints[i] = centerY + (int) (radius * Math.sin(currentAngle));
         }

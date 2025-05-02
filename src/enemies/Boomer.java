@@ -5,27 +5,27 @@ import entity.Boom;
 import entity.MovedObject.Player;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.*;
 import java.util.List;
-import java.util.Random;
 import javax.swing.Timer;
 import static main.GamePanel.*;
 
 public class Boomer extends Enemy {
     private List<Boom> boomList;
+    private List<Boom> pendingBooms;
     private Timer attackTimer = null;
     private Player player;
-    public Boomer(int x, int y, int health, float fireRate,Player player) {
+
+    public Boomer(int x, int y, int health, float fireRate, Player player) {
         super(x, y, health, fireRate, new Color(199, 21, 133));
         boomList = new ArrayList<>();
+        pendingBooms = new ArrayList<>();
         this.player = player;
     }
 
     @Override
     public void attack() {
         attackTimer = new Timer(5000, (ActionEvent e) -> {
-
             Random random = new Random();
             int totalBombsPerTurn = 3;
 
@@ -37,17 +37,14 @@ public class Boomer extends Enemy {
                     bombX = random.nextInt(COLS) * TILE_SIZE;
                     bombY = random.nextInt(ROWS) * TILE_SIZE;
                     point = new Point(bombX, bombY);
-                } while (Barrier.isObstacle(bombX/TILE_SIZE, bombY/TILE_SIZE));
+                } while (Barrier.isObstacle(bombX / TILE_SIZE, bombY / TILE_SIZE));
 
                 Boom boom = new Boom(point);
-                boomList.add(boom);
-
+                pendingBooms.add(boom);
             }
         });
         attackTimer.setRepeats(false);
         attackTimer.start();
-
-
     }
 
     @Override
@@ -56,6 +53,11 @@ public class Boomer extends Enemy {
 
         if (attackTimer == null || !attackTimer.isRunning()) {
             attack();
+        }
+
+        if (!pendingBooms.isEmpty()) {
+            boomList.addAll(pendingBooms);
+            pendingBooms.clear();
         }
 
         Iterator<Boom> iter = boomList.iterator();
@@ -72,7 +74,6 @@ public class Boomer extends Enemy {
             }
         }
     }
-
 
     @Override
     public void render(Graphics g) {

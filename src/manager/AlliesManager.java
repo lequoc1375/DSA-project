@@ -32,4 +32,8 @@ public class AlliesManager {
     public List<Allies> getAlliesList() {
         return new ArrayList<>(alliesQueue);
     }
+
+    public Queue<Allies> getAlliesQueue() {
+        return alliesQueue;
+    }
 }

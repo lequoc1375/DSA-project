@@ -23,13 +23,9 @@ import manager.AlliesManager;
 import manager.EnemiesManager;
 import manager.MoveManager;
 
-import static com.sun.java.accessibility.util.AWTEventMonitor.addKeyListener;
-
 public class Playing {
 
     private List<Bullet> bullets = new ArrayList<>();
-    // Sử dụng Queue cho allies để duy trì thứ tự theo FIFO
-//    private Queue<Allies> alliesList = new LinkedList<>();
     private List<MoveManager> alliesMoveManager = new ArrayList<>();
     private EnemiesManager enemiesManager;
     private AlliesManager alliesManager;
@@ -74,8 +70,8 @@ public class Playing {
                 }
                 break;
             case 2:
-                if (countBoomer < 0) {
-                    enemiesManager.add(new Boomer(x, y, 75, 20000, player)); // boomer
+                if (countBoomer < 2) {
+                    enemiesManager.add(new Boomer(x, y, 75, 20000, player));
                     countBoomer++;
                 }
                 break;
@@ -87,7 +83,7 @@ public class Playing {
                 break;
             case 4:
                 if (countSniper < 1) {
-                    enemiesManager.add(new Sniper(x, y, 100, 7500, playerManager)); // Sniper
+                    enemiesManager.add(new Sniper(x, y, 100, 7500, playerManager, player)); // Sniper
                     countSniper++;
                 }
                 break;
@@ -167,7 +163,7 @@ public class Playing {
         if (selectedType.equals("Blue")) {
             return new BlueAllies(spawnX, spawnY);
         } else if (selectedType.equals("Brown")) {
-            brownAllies = new BrownAllies(spawnX, spawnY,playerManager);
+            brownAllies = new BrownAllies(spawnX, spawnY,playerManager, player);
             return brownAllies;
         } else if (selectedType.equals("Purple")) {
             purpleAllies = new PurpleAllies(spawnX, spawnY,playerManager);
@@ -193,7 +189,7 @@ public class Playing {
         ROWS = GamePanel.ROWS;
         COLS = GamePanel.COLS;
         TILE_SIZE = GamePanel.TILE_SIZE;
-        player = new Player(10, 10);
+        player = new Player(10, 10, this);
         turret = new Turret(20, 20, bullets);
         barrier = new Barrier();
         playerManager = new MoveManager(player);
@@ -264,10 +260,11 @@ public class Playing {
 
 
         List<Allies> newList = alliesManager.getAlliesList();
-        for (int i = 0; i < alliesMoveManager.size(); i++) {
+        System.out.println("Drawing: Allies list size: " + newList.size() + ", MoveManager size: " + alliesMoveManager.size());
+        for (int i = 0; i < Math.min(alliesMoveManager.size(), newList.size()); i++) {
             MoveManager manager = alliesMoveManager.get(i);
             Point allyPixel = manager.getPixelPosition();
-            Allies ally =newList.get(i);
+            Allies ally = newList.get(i);
             ally.draw(g, allyPixel.x, allyPixel.y);
         }
 //        turret.draw(g);
@@ -287,13 +284,11 @@ public class Playing {
 //            return bullet.isOutOfBounds();
 //        });
 
-
         for (Allies ally : alliesManager.getAlliesList()) {
             ally.update();
         }
 
-
-
+        player.setAlliesManager(alliesManager);
     }
 
     private void moveEntities(float dT) {
@@ -381,6 +376,11 @@ public class Playing {
     public PurpleAllies getPurpleAllies() {
         return purpleAllies;
     }
-
+    public void handlePlayerHit(Allies sacrificed) {
+        if (sacrificed != null) {
+            alliesMoveManager.removeIf(manager -> manager.getMovedObject() == sacrificed);
+            System.out.println("Removed Ally. Queue size: " + alliesManager.getAlliesQueue().size() + ", MoveManager size: " + alliesMoveManager.size());
+        }
+    }
 
 }
