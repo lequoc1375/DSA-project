@@ -17,3 +17,5 @@
 
 20/4. update logic skill enemies (done)
 20/4. Update effect skill on allies
+21/4. update 1 số logic, fix bug
+28/4: fix bug, chưa xong việc quản lý enemies khi bị bắn trúng

@@ -3,6 +3,7 @@ package manager;
 import entity.Barrier;
 import entity.MovedObject.ObjectCanMove;
 import entity.MovedObject.Player;
+import main.GamePanel;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
@@ -11,8 +12,8 @@ import java.util.Queue;
 import java.util.*;
 
 public class MoveManager {
-    private static final int ROWS = 60;
-    private static final int COLS = 60;
+    private static final int ROWS = GamePanel.ROWS;
+    private static final int COLS = GamePanel.COLS;
     private static final int TILE_SIZE = 16;
     private static final int[][] costMap = new int[ROWS][COLS];
     private static final int MAX_OBJECTS_PER_CELL = 2;
@@ -254,6 +255,10 @@ public class MoveManager {
         isMoving = false;
         targetPos = null;
         stuckCounter = 0;
+    }
+
+    public ObjectCanMove getMovedObject() {
+        return movingObject;
     }
 
 }

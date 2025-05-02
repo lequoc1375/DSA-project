@@ -12,10 +12,11 @@ public class BrownAllies extends Allies {
     private Timer cooldownTimer;
     private Timer shieldDurationTimer;
     private MoveManager player;
-
-    public BrownAllies(int x, int y, MoveManager playerMove) {
+    private Player playerObject;
+    public BrownAllies(int x, int y, MoveManager playerMove, Player player) {
         super(x, y, new Color(139, 69, 19));
         this.player = playerMove;
+        player.setBrownAllies(this);
     }
 
     @Override
@@ -75,7 +76,7 @@ public class BrownAllies extends Allies {
         if (isActive) {
             shieldDurationTimer.stop();
             deactivateShield();
-            System.out.println("Shield broken by EMP!");
+            System.out.println("Shield broken");
         }
     }
 

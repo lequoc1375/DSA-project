@@ -1,4 +1,6 @@
 package entity;
+import main.GamePanel;
+
 import java.awt.*;
 
 public class Bullet {
@@ -7,8 +9,8 @@ public class Bullet {
     private static final int SIZE = 6;
     private static final int SPEED = 10;
     private static final int TILE_SIZE = 16;
-    private static final int ROWS = 60;
-    private static final int COLS = 60;
+    private static final int ROWS = GamePanel.ROWS;
+    private static final int COLS = GamePanel.COLS;
 
     public Bullet(Point startPos, double dx, double dy) {
         this.x = startPos.x * TILE_SIZE + TILE_SIZE / 2.0;

@@ -9,10 +9,11 @@ import manager.ScenesManager;
 import scenes.GameStates;
 import scenes.Menu;
 import scenes.Playing;
+import scenes.Setting;
 
 public class GamePanel extends JPanel implements Runnable {
-    public static final int COLS = 60;
-    public static final int ROWS = 60;
+    public static final int COLS = 50;
+    public static final int ROWS = 50;
     public static final int TILE_SIZE = 16;
     private static final float TIME_STEP = 0.01887f;
     private ScenesManager scenesManager;
@@ -20,13 +21,14 @@ public class GamePanel extends JPanel implements Runnable {
     private Menu menu;
     
     private Playing playing;
-    
+    private Setting setting;
     public GamePanel() {
         setPreferredSize(new Dimension(COLS * TILE_SIZE, ROWS * TILE_SIZE));
         setFocusable(true);
         requestFocusInWindow();
         playing = new Playing();
         menu = new Menu();
+        setting = new Setting();
         scenesManager = new ScenesManager(this);
         addMouseListener(new MouseHandler(this));
         addMouseMotionListener(new MouseHandler(this));
@@ -57,11 +59,13 @@ public class GamePanel extends JPanel implements Runnable {
     
     
     public void onMouseClick(MouseEvent e) {
-        if(GameStates.gameStates == GameStates.PLAYING) {
-            playing.onMouseClick(e);    
+        if (GameStates.gameStates == GameStates.PLAYING) {
+            playing.onMouseClick(e);
+        } else if (GameStates.gameStates == GameStates.MENU) {
+            menu.onMouseClick(e);
+        } else if (GameStates.gameStates == GameStates.SETTINGS) {
+            setting.onMouseClick(e); // Handle clicks in SETTINGS state
         }
-        
-        menu.onMouseClick(e);
     }
 
     public Playing getPlaying() {
@@ -69,5 +73,8 @@ public class GamePanel extends JPanel implements Runnable {
     }
     public Menu getMenu() {
         return menu;
+    }
+    public Setting getSetting() {
+        return setting;
     }
 }

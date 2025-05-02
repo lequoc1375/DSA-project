@@ -7,9 +7,12 @@ public class Run {
         JFrame jf = new JFrame();
         GamePanel gamePanel = new GamePanel();
         jf.add(gamePanel);
-        jf.pack();
         jf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        jf.setVisible(true);
+        jf.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        jf.setUndecorated(false);
+        jf.pack();
+        jf.setLocationRelativeTo(null);
         gamePanel.requestFocusInWindow();
+        jf.setVisible(true);
     }
 }

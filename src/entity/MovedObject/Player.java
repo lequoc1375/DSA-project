@@ -1,19 +1,29 @@
 package entity.MovedObject;
 
 import enemies.EMPDisabler;
+import manager.AlliesManager;
+import scenes.Playing;
 
 import java.awt.*;
 
 public class Player implements ObjectCanMove {
     private Point position;
     private double health;
-    public static float speed = 120; 
+    public static float speed = 120;
     private boolean isSlowed = false;
     private boolean  skillActive = true;
     private Rectangle bound;
-    public Player(int x, int y) {
+    private BrownAllies brownAllies;
+
+    private AlliesManager alliesManager;
+    private boolean shieldActive = false;
+    private boolean isDead = false;
+    private Playing playing;
+
+    public Player(int x, int y, Playing playing) {
         this.position = new Point(x, y);
         bound = new Rectangle();
+        this.playing = playing;
     }
 
     @Override
@@ -48,6 +58,35 @@ public class Player implements ObjectCanMove {
     public EMPDisabler getEmpSource() {
         return empSource;
     }
+    public void playerIsHit() {
+        if (shieldActive) {
+            breakShield();
 
+        } else if (alliesManager != null && !alliesManager.getAlliesQueue().isEmpty()) {
+            Allies sacrificed = alliesManager.getAlliesQueue().poll();
+            playing.handlePlayerHit(sacrificed);
+        } else {
+            die();
+        }
+    }
+
+    private void breakShield() {
+        shieldActive = false;
+        System.out.println("Shield is broken!");
+    }
+
+    private void die() {
+        isDead = true;
+        System.out.println("Player die");
+    }
+
+
+    public void setBrownAllies(BrownAllies brownAllies) {
+        this.brownAllies = brownAllies;
+    }
+
+    public void setAlliesManager(AlliesManager manager) {
+        this.alliesManager = manager;
+    }
 
 }
