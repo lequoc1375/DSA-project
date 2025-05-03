@@ -12,3 +12,10 @@
 16/3. Slower (Done)
 16/3. EMPDisable (Done)
 17/3. Active skill allies
+18/3. Blue allies (done)
+14/4. Brown (done)
+
+20/4. update logic skill enemies (done)
+20/4. Update effect skill on allies
+21/4. update 1 số logic, fix bug
+28/4: fix bug, chưa xong việc quản lý enemies khi bị bắn trúng
