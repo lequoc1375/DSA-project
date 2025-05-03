@@ -6,6 +6,7 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import javax.swing.*;
 import manager.ScenesManager;
+import manager.SoundManager;
 import scenes.GameStates;
 import scenes.Menu;
 import scenes.Playing;
@@ -17,18 +18,19 @@ public class GamePanel extends JPanel implements Runnable {
     public static final int TILE_SIZE = 16;
     private static final float TIME_STEP = 0.01887f;
     private ScenesManager scenesManager;
-
     private Menu menu;
-    
     private Playing playing;
     private Setting setting;
+    private SoundManager soundManager;
+
     public GamePanel() {
         setPreferredSize(new Dimension(COLS * TILE_SIZE, ROWS * TILE_SIZE));
         setFocusable(true);
         requestFocusInWindow();
-        playing = new Playing();
-        menu = new Menu();
-        setting = new Setting();
+        soundManager = new SoundManager();
+        playing = new Playing(); 
+        menu = new Menu(); 
+        setting = new Setting(this); 
         scenesManager = new ScenesManager(this);
         addMouseListener(new MouseHandler(this));
         addMouseMotionListener(new MouseHandler(this));
@@ -39,8 +41,11 @@ public class GamePanel extends JPanel implements Runnable {
     @Override
     public void run() {
         while (true) {
-            if(GameStates.gameStates == GameStates.PLAYING) {
+            if (GameStates.gameStates == GameStates.PLAYING) {
                 playing.updateGame(TIME_STEP);
+            }
+            if (soundManager.isSoundOn()) {
+                soundManager.playBackground(); 
             }
             repaint();
             try {
@@ -57,24 +62,29 @@ public class GamePanel extends JPanel implements Runnable {
         scenesManager.render(g);
     }
     
-    
     public void onMouseClick(MouseEvent e) {
         if (GameStates.gameStates == GameStates.PLAYING) {
             playing.onMouseClick(e);
         } else if (GameStates.gameStates == GameStates.MENU) {
             menu.onMouseClick(e);
         } else if (GameStates.gameStates == GameStates.SETTINGS) {
-            setting.onMouseClick(e); // Handle clicks in SETTINGS state
+            setting.onMouseClick(e);
         }
     }
 
     public Playing getPlaying() {
         return playing;
     }
+
     public Menu getMenu() {
         return menu;
     }
+
     public Setting getSetting() {
         return setting;
+    }
+
+    public SoundManager getSoundManager() {
+        return soundManager;
     }
 }

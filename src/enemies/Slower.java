@@ -27,7 +27,6 @@ public class Slower extends Enemy {
         isSlowed = true;
         isOnCooldown = true;
 
-
         player.setSpeed(80);
 
         effectTimer = new Timer(10000, (ActionEvent e) -> {

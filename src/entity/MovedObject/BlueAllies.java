@@ -20,6 +20,7 @@ public class BlueAllies extends Allies {
     private boolean isAttacking = false;
     private Timer attackTimer = null;
     private boolean isEmpDisabled = false;
+
     public BlueAllies(int x, int y) {
         super(x, y, new Color(30, 144, 255));
         this.allyBullets = new ArrayList<>();
