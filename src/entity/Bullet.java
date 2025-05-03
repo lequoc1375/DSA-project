@@ -1,7 +1,6 @@
 package entity;
-import main.GamePanel;
-
 import java.awt.*;
+import main.GamePanel;
 
 public class Bullet {
     private double x, y;

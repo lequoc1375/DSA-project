@@ -1,8 +1,8 @@
 package manager;
 
-import javax.sound.sampled.*;
 import java.io.File;
 import java.net.URL;
+import javax.sound.sampled.*;
 
 public class SoundManager {
     private Clip backgroundClip;
@@ -11,17 +11,18 @@ public class SoundManager {
 
     public SoundManager() {
         try {
-            // Load background music
-            URL backgroundUrl = getClass().getResource("src\\resources\\[EVANO.COM] Envici November - Original Instrument-HQ.wav");
+           
+            URL backgroundUrl = getClass().getClassLoader().getResource("resources/gamemusic.wav");
+
             if (backgroundUrl == null) {
-                backgroundUrl = new File("src\\resources\\[EVANO.COM] Envici November - Original Instrument-HQ.wav").toURI().toURL();
+                backgroundUrl = getClass().getClassLoader().getResource("resources/gamemusic.wav");
             }
             AudioInputStream backgroundStream = AudioSystem.getAudioInputStream(backgroundUrl);
             backgroundClip = AudioSystem.getClip();
             backgroundClip.open(backgroundStream);
-            backgroundClip.loop(Clip.LOOP_CONTINUOUSLY); // Loop the background music
+            backgroundClip.loop(Clip.LOOP_CONTINUOUSLY); 
 
-            // Load effect sound (e.g., click)
+
             URL effectUrl = getClass().getResource("/resources/click.wav");
             if (effectUrl == null) {
                 effectUrl = new File("click.wav").toURI().toURL();
@@ -46,14 +47,14 @@ public class SoundManager {
 
     public void playEffect() {
         if (soundOn && effectClip != null) {
-            effectClip.setFramePosition(0); // Rewind to start
+            effectClip.setFramePosition(0); 
             effectClip.start();
         }
     }
 
     public void playBackground() {
         if (soundOn && backgroundClip != null && !backgroundClip.isRunning()) {
-            backgroundClip.setFramePosition(0); // Rewind to start
+            backgroundClip.setFramePosition(0); 
             backgroundClip.start();
         }
     }
