@@ -54,8 +54,29 @@ public  class Allies  implements ObjectCanMove{
     }
 
     public void draw(Graphics g, int x, int y) {
-        g.setColor(color);
+        switch(this.getLevel()) {
+            case 1:
+                g.setColor(new Color(253,253,255));
+                break;
+            case 2:
+                g.setColor(new Color(69,203,103));
+                break;
+            case 3:
+                g.setColor(new Color(51,161,247));
+                break;
+            case 4:
+                g.setColor(new Color(163,67,255));
+                break;
+            case 5:
+                g.setColor(new Color(253,214,54));
+                break;
+            case 6:
+                g.setColor(new Color(239,34,38));  
+                break;  
+        }
         g.fillOval(x-4, y-4, 8, 8);
+        g.setColor(color);
+        g.fillOval(x-3, y-3, 6, 6);
     }
 
     public Color getColor() {
@@ -77,5 +98,19 @@ public  class Allies  implements ObjectCanMove{
 
     public EMPDisabler getEmpSource() {
         return empSource;
+    }
+
+    public String getType() {
+        return this.getClass().getSimpleName();
+    }
+
+    private int level = 1;
+
+    public int getLevel() {
+        return level;
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
     }
 }

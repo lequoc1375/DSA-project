@@ -22,7 +22,7 @@ public class Barrier {
         }
     }
 
-    public void generateObstacles(Point start, Point turretPos) {
+    public void generateObstacles(Point start) {
         Random rand = new Random();
         int totalObstacles = (ROWS * COLS) / 5; // Tổng số ô chướng ngại vật
         int[][] directions = { { 0, 1 }, { 1, 0 }, { 0, -1 }, { -1, 0 } };
@@ -36,7 +36,6 @@ public class Barrier {
             Point startPoint = new Point(x, y);
 
             if (!start.equals(startPoint) &&
-                    !turretPos.equals(startPoint) &&
                     costField[y][x] != 1000) {
 
                 int clusterSize = 2 + rand.nextInt(4);
@@ -59,7 +58,6 @@ public class Barrier {
 
                         if (isValidPosition(newX, newY) &&
                                 !start.equals(newPoint) &&
-                                !turretPos.equals(newPoint) &&
                                 !usedPositions.contains(newPoint)) {
                             cluster.add(newPoint);
                             usedPositions.add(newPoint);

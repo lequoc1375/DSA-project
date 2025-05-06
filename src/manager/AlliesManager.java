@@ -16,6 +16,10 @@ public class AlliesManager {
         alliesQueue.offer(ally);
     }
 
+    public void remove(Allies ally) {
+        alliesQueue.remove(ally);
+    }
+
 
     public void update() {
         for (Allies ally : alliesQueue) {

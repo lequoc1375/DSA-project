@@ -31,13 +31,13 @@ public class Playing {
     private AlliesManager alliesManager;
     private MoveManager playerManager;
     private Barrier barrier;
-    private Turret turret;
+    // private Turret turret;
     private Player player;
     private int ROWS;
     private int COLS;
     private int TILE_SIZE;
     private Point targetPosition = null;
-    private int noOfAllies = 4;
+    private int noOfAllies = 50;
     private Color randomColor;
     private int countBoomer = 0;
     private int countSlower = 0;
@@ -53,9 +53,9 @@ public class Playing {
     private int NoOfAlliesCurrent = 0;
     public Playing() {
         initGenerate();
-        new Timer(500, e -> turret.fireBullet(player.getPosition())).start();
+        // new Timer(500, e -> turret.fireBullet(player.getPosition())).start();
         new Timer(7654, e -> SpawnEnemies()).start();
-        new Timer(15000, e -> SpawnAllies()).start();
+        new Timer(4000, e -> SpawnAllies()).start();
 
     }
 
@@ -115,6 +115,7 @@ public class Playing {
         alliesMoveManager.add(new MoveManager(newAlly));
         NoOfAlliesCurrent ++;
 
+        mergeIfPossible(newAlly);
     }
 
     private Allies spawnWeightedAlly(int spawnX, int spawnY) {
@@ -184,15 +185,67 @@ public class Playing {
         }
     }
 
+    private void mergeIfPossible(Allies newAlly) {
+        String type = newAlly.getType();
+        int level = newAlly.getLevel();
+    
+        List<Allies> same = new ArrayList<>();
+        for (Allies a : alliesManager.getAlliesList()) {
+            if (a != newAlly && a.getType().equals(type) && a.getLevel() == level) {
+                same.add(a);
+            }
+        }
+    
+        if (same.size() >= 2) {
+            Allies a1 = same.get(0);
+            Allies a2 = same.get(1);
+    
+            alliesManager.getAlliesQueue().remove(a1);
+            alliesManager.getAlliesQueue().remove(a2);
+            alliesManager.getAlliesQueue().remove(newAlly);
+            alliesMoveManager.removeIf(m -> m.getMovedObject() == a1 || m.getMovedObject() == a2 || m.getMovedObject() == newAlly);
+    
+            Allies upgraded = upgradeAlly(newAlly.getType(), newAlly.getX(), newAlly.getY(), level + 1);
+            alliesManager.add(upgraded);
+            alliesMoveManager.add(new MoveManager(upgraded));
+    
+            System.out.println("Merged 3 " + type + " Lv" + level + " → Lv" + (level + 1));
+    
+            mergeIfPossible(upgraded);
+        }
+    }
+
+    private Allies upgradeAlly(String type, int x, int y, int newLevel) {
+        Allies ally;
+        switch (type) {
+            case "BlueAllies":
+                ally = new BlueAllies(x, y);
+                break;
+            case "BrownAllies":
+                ally = new BrownAllies(x, y, playerManager, player);
+                break;
+            case "OrangeAllies":
+                ally = new OrangeAllies(x, y, playerManager);
+                break;
+            case "PurpleAllies":
+                ally = new PurpleAllies(x, y, playerManager);
+                break;
+            default:
+                ally = new BlueAllies(x, y);
+        }
+        ally.setLevel(newLevel);
+        return ally;
+    }
+
     public void initGenerate() {
         ROWS = GamePanel.ROWS;
         COLS = GamePanel.COLS;
         TILE_SIZE = GamePanel.TILE_SIZE;
         player = new Player(10, 10, this);
-        turret = new Turret(20, 20, bullets);
+        // turret = new Turret(1, 1, bullets);
         barrier = new Barrier();
         playerManager = new MoveManager(player);
-        playerManager.addStationNaryObject(new Point(turret.getX(), turret.getY()));
+        // playerManager.addStationNaryObject(new Point(turret.getX(), turret.getY()));
         enemiesManager = new EnemiesManager();
         alliesManager = new AlliesManager();
         Random random = new Random();
@@ -201,7 +254,7 @@ public class Playing {
         alliesMoveManager.clear();
         enemiesManager.clear();
         alliesManager.clear();
-        barrier.generateObstacles(player.getPosition(), new Point(turret.getX(), turret.getY()));
+        barrier.generateObstacles(player.getPosition());
     }
 
     private void avoidOverlapping() {
@@ -299,7 +352,7 @@ public class Playing {
             playerManager.moveObject(dT, allManagers);
             allStopped = false;
         }
-        for (MoveManager manager : alliesMoveManager) {
+        for (MoveManager manager : new ArrayList<>(alliesMoveManager)) {
             if (manager.isMoving()) {
                 manager.moveObject(dT, allManagers);
                 allStopped = false;

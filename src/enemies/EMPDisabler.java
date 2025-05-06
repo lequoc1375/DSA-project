@@ -85,7 +85,8 @@ public class EMPDisabler extends Enemy {
             player1.setEmpSource(null);
         }
 
-        for (int i = 0; i < allies.size(); i++) {
+        int minSize = Math.min(allies.size(), alliesManager.size());
+        for (int i = 0; i < minSize; i++) {
             Allies ally = allies.get(i);
             MoveManager allyMove = alliesManager.get(i);
 
@@ -128,7 +129,8 @@ public class EMPDisabler extends Enemy {
         List<Allies> allies = alliesSupplier.get();
         List<MoveManager> alliesManager = alliesManagerSupplier.get();
 
-        for (int i = 0; i < allies.size(); i++) {
+        int minSize = Math.min(allies.size(), alliesManager.size());
+        for (int i = 0; i < minSize; i++) {
             Allies ally = allies.get(i);
             MoveManager allyMove = alliesManager.get(i);
 
