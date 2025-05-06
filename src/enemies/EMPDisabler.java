@@ -109,8 +109,8 @@ public class EMPDisabler extends Enemy {
         super.render(g);
         Graphics2D g2d = (Graphics2D) g;
 
-        int centerX = x * 16 + width / 2;
-        int centerY = y * 16 + height / 2;
+        int centerX = x * 16 + width;
+        int centerY = y * 16 + height;
 
         if (empActive) {
             g2d.setColor(Color.RED);

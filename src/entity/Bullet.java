@@ -33,7 +33,7 @@ public class Bullet {
     }
 
     public Rectangle getBounds() {
-        return new Rectangle((int) x, (int) y, SIZE, SIZE);
+        return new Rectangle((int)(x - SIZE / 2.0), (int)(y - SIZE / 2.0), SIZE, SIZE);
     }
 
 }

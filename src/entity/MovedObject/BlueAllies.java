@@ -16,14 +16,53 @@ import static main.GamePanel.TILE_SIZE;
 public class BlueAllies extends Allies {
     private List<Bullet> allyBullets;
 
-    private int attackRange = 150;
+    private int attackRange;
+    private int attackDelay;
+    private double bulletSpeed;
+
     private boolean isAttacking = false;
     private Timer attackTimer = null;
     private boolean isEmpDisabled = false;
 
     public BlueAllies(int x, int y) {
         super(x, y, new Color(30, 144, 255));
+        applyUpgradeStats();
         this.allyBullets = new ArrayList<>();
+    }
+
+    private void applyUpgradeStats() {
+        switch (this.getLevel()) {
+            case 1:
+                attackRange = 150;
+                attackDelay = 2000;
+                bulletSpeed = 1.2;
+                break;
+            case 2:
+                attackRange = 170;
+                attackDelay = 1800;
+                bulletSpeed = 1.4;
+                break;
+            case 3:
+                attackRange = 190;
+                attackDelay = 1600;
+                bulletSpeed = 1.6;
+                break;
+            case 4:
+                attackRange = 210;
+                attackDelay = 1400;
+                bulletSpeed = 1.8;
+                break;
+            case 5:
+                attackRange = 230;
+                attackDelay = 1200;
+                bulletSpeed = 2.0;
+                break;
+            case 6:
+                attackRange = 250;
+                attackDelay = 200;
+                bulletSpeed = 2.2;
+                break;
+        }
     }
 
     @Override
@@ -62,7 +101,7 @@ public class BlueAllies extends Allies {
 
     public void attack() {
         isAttacking = true;
-        attackTimer = new Timer(2000, (ActionEvent e) -> {
+        attackTimer = new Timer(attackDelay, (ActionEvent e) -> {
             Enemy target = getNearestEnemy();
             System.out.println("Target: " + target);
             if (target != null) {
@@ -73,15 +112,14 @@ public class BlueAllies extends Allies {
                 int targetX = target.getX();
                 int targetY = target.getY();
 
-                double dx = (targetX - startX) * TILE_SIZE + TILE_SIZE / 2;
-                double dy = (targetY - startY) * TILE_SIZE + TILE_SIZE / 2;
+                double dx = (targetX - startX) * TILE_SIZE;
+                double dy = (targetY - startY) * TILE_SIZE;
                 double distance = Math.sqrt(dx * dx + dy * dy);
                 if (distance != 0) {
                     dx /= distance;
                     dy /= distance;
                 }
 
-                double bulletSpeed = 1.2;
                 double vx = dx * bulletSpeed;
                 double vy = dy * bulletSpeed;
 
@@ -97,6 +135,7 @@ public class BlueAllies extends Allies {
     @Override
     public void update() {
         super.update();
+        applyUpgradeStats();
 
         if (!isEmpDisabled && getNearestEnemy() != null && !isAttacking) {
             attack();
@@ -111,7 +150,7 @@ public class BlueAllies extends Allies {
             }
 
             for (Enemy enemy : EnemiesManager.getEnemies()) {
-                if(bullet.getBounds().intersects(new Rectangle( enemy.getX() * TILE_SIZE + TILE_SIZE / 2,  enemy.getY() * TILE_SIZE + TILE_SIZE / 2, TILE_SIZE, TILE_SIZE))) {
+                if(bullet.getBounds().intersects(enemy.getBound())) {
                     System.out.println("Enemies is attacked");
                     toRemove.add(bullet);
                     break;

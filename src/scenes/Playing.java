@@ -11,12 +11,15 @@ import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 import java.util.Random;
 import java.util.Set;
+import java.util.stream.Collectors;
+
 import javax.swing.*;
 import main.GamePanel;
 import manager.AlliesManager;
@@ -51,11 +54,15 @@ public class Playing {
     private int countPurple = 0;
     private PurpleAllies purpleAllies;
     private int NoOfAlliesCurrent = 0;
+
+    private int MaxLevelOfBlue = 1;
+    private final Random random = new Random();
+
     public Playing() {
         initGenerate();
         // new Timer(500, e -> turret.fireBullet(player.getPosition())).start();
         new Timer(7654, e -> SpawnEnemies()).start();
-        new Timer(4000, e -> SpawnAllies()).start();
+        new Timer(500, e -> SpawnAllies()).start();
 
     }
 
@@ -91,7 +98,6 @@ public class Playing {
         }
     }
 
-
     private void SpawnAllies() {
         if (alliesManager.getAlliesList().size() >= noOfAllies) {
             return;
@@ -120,36 +126,34 @@ public class Playing {
 
     private Allies spawnWeightedAlly(int spawnX, int spawnY) {
         List<WeightedAlly> weightedAllies = new ArrayList<>();
-        weightedAllies.add(new WeightedAlly("Blue", 10));
+    
+        // Always allow Blue
+        weightedAllies.add(new WeightedAlly("BlueAllies", 10));
+    
+        // Add only if not spawned yet
         if (countBrown < 1) {
-            weightedAllies.add(new WeightedAlly("Brown", 10));
-            countBrown++;
-        } else {
-            weightedAllies.add(new WeightedAlly("Brown", 0));
+            weightedAllies.add(new WeightedAlly("BrownAllies", 10));
         }
-
+    
         if (countOrange < 1) {
-            weightedAllies.add(new WeightedAlly("Orange", 40));
-            countOrange++;
-        } else {
-            weightedAllies.add(new WeightedAlly("Orange", 0));
+            weightedAllies.add(new WeightedAlly("OrangeAllies", 40));
         }
-
+    
         if (countPurple < 1) {
-            weightedAllies.add(new WeightedAlly("Purple", 40));
-            countPurple++;
-        } else {
-            weightedAllies.add(new WeightedAlly("Purple", 0));
+            weightedAllies.add(new WeightedAlly("PurpleAllies", 40));
         }
-
+    
+        // Compute total weight
         int totalWeight = 0;
         for (WeightedAlly wa : weightedAllies) {
             totalWeight += wa.weight;
         }
+    
+        // Select random weight
         Random random = new Random();
         int randomWeight = random.nextInt(totalWeight);
-
-
+    
+        // Choose ally based on weight
         int sum = 0;
         String selectedType = "";
         for (WeightedAlly wa : weightedAllies) {
@@ -159,21 +163,28 @@ public class Playing {
                 break;
             }
         }
-
-        if (selectedType.equals("Blue")) {
-            return new BlueAllies(spawnX, spawnY);
-        } else if (selectedType.equals("Brown")) {
-            brownAllies = new BrownAllies(spawnX, spawnY,playerManager, player);
-            return brownAllies;
-        } else if (selectedType.equals("Purple")) {
-            purpleAllies = new PurpleAllies(spawnX, spawnY,playerManager);
-            return purpleAllies;
-        } else if (selectedType.equals("Orange")) {
-            orangeAllies = new OrangeAllies(spawnX,spawnY, playerManager);
-            return orangeAllies;
+    
+        // Create instance and increase count
+        switch (selectedType) {
+            case "BlueAllies":
+                return new BlueAllies(spawnX, spawnY);
+            case "BrownAllies":
+                countBrown++;
+                brownAllies = new BrownAllies(spawnX, spawnY, playerManager, player);
+                return brownAllies;
+            case "OrangeAllies":
+                countOrange++;
+                orangeAllies = new OrangeAllies(spawnX, spawnY, playerManager);
+                return orangeAllies;
+            case "PurpleAllies":
+                countPurple++;
+                purpleAllies = new PurpleAllies(spawnX, spawnY, playerManager);
+                return purpleAllies;
+            default:
+                return new BlueAllies(spawnX, spawnY); // fallback
         }
-        return new BlueAllies(spawnX, spawnY);
     }
+    
 
 
     private static class WeightedAlly {
@@ -200,20 +211,41 @@ public class Playing {
             Allies a1 = same.get(0);
             Allies a2 = same.get(1);
     
+            // Cleanup all related MoveManagers
+            for (MoveManager mm : new ArrayList<>(alliesMoveManager)) {
+                if (mm.getMovedObject() == a1 || mm.getMovedObject() == a2 || mm.getMovedObject() == newAlly) {
+                    mm.cleanup();
+                }
+            }
+    
+            // Remove merged allies from the queue
             alliesManager.getAlliesQueue().remove(a1);
             alliesManager.getAlliesQueue().remove(a2);
             alliesManager.getAlliesQueue().remove(newAlly);
-            alliesMoveManager.removeIf(m -> m.getMovedObject() == a1 || m.getMovedObject() == a2 || m.getMovedObject() == newAlly);
     
+            // Remove related MoveManagers
+            alliesMoveManager.removeIf(m ->
+                m.getMovedObject() == a1 ||
+                m.getMovedObject() == a2 ||
+                m.getMovedObject() == newAlly
+            );
+    
+            // Create upgraded ally
             Allies upgraded = upgradeAlly(newAlly.getType(), newAlly.getX(), newAlly.getY(), level + 1);
             alliesManager.add(upgraded);
             alliesMoveManager.add(new MoveManager(upgraded));
-    
-            System.out.println("Merged 3 " + type + " Lv" + level + " → Lv" + (level + 1));
-    
-            mergeIfPossible(upgraded);
+
+            if(upgraded.getLevel() < 6) {
+                mergeIfPossible(upgraded);
+            }
+            
+            if (MaxLevelOfBlue < upgraded.getLevel() && upgraded.getType().equals("BlueAllies")) {
+                MaxLevelOfBlue++;
+                upgradeRandomSpecialAlly();
+            }
         }
     }
+    
 
     private Allies upgradeAlly(String type, int x, int y, int newLevel) {
         Allies ally;
@@ -237,6 +269,48 @@ public class Playing {
         return ally;
     }
 
+    private void upgradeRandomSpecialAlly() {
+        List<Allies> bonusList = new ArrayList<>();
+    
+        if (brownAllies != null) bonusList.add(brownAllies);
+        if (orangeAllies != null) bonusList.add(orangeAllies);
+        if (purpleAllies != null) bonusList.add(purpleAllies);
+    
+        if (!bonusList.isEmpty()) {
+            Allies toUpgrade = bonusList.get(random.nextInt(bonusList.size()));
+    
+            String type = toUpgrade.getType();
+            int level = toUpgrade.getLevel();
+            int x = toUpgrade.getX();
+            int y = toUpgrade.getY();
+    
+            alliesManager.remove(toUpgrade);
+            alliesMoveManager.removeIf(m -> m.getMovedObject() == toUpgrade);
+            for (MoveManager mm : new ArrayList<>(alliesMoveManager)) {
+                if (mm.getMovedObject() == toUpgrade) {
+                    mm.cleanup();
+                }
+            }
+    
+            Allies upgraded = upgradeAlly(type, x, y, level + 1);
+            alliesManager.add(upgraded);
+            alliesMoveManager.add(new MoveManager(upgraded));
+    
+            switch (type) {
+                case "BrownAllies":
+                    brownAllies = (BrownAllies) upgraded;
+                    break;
+                case "OrangeAllies":
+                    orangeAllies = (OrangeAllies) upgraded;
+                    break;
+                case "PurpleAllies":
+                    purpleAllies = (PurpleAllies) upgraded;
+                    break;
+            }
+        }
+    }
+    
+
     public void initGenerate() {
         ROWS = GamePanel.ROWS;
         COLS = GamePanel.COLS;
@@ -253,7 +327,6 @@ public class Playing {
         alliesManager.clear();
         alliesMoveManager.clear();
         enemiesManager.clear();
-        alliesManager.clear();
         barrier.generateObstacles(player.getPosition());
     }
 
@@ -262,6 +335,7 @@ public class Playing {
         managers.add(playerManager);
         managers.addAll(alliesMoveManager);
         int n = managers.size();
+        // System.out.println("Size is = "+n);
         float[] offsetX = new float[n];
         float[] offsetY = new float[n];
         for (int i = 0; i < n; i++) {
@@ -312,7 +386,6 @@ public class Playing {
 
 
         List<Allies> newList = alliesManager.getAlliesList();
-        System.out.println("Drawing: Allies list size: " + newList.size() + ", MoveManager size: " + alliesMoveManager.size());
         for (int i = 0; i < Math.min(alliesMoveManager.size(), newList.size()); i++) {
             MoveManager manager = alliesMoveManager.get(i);
             Point allyPixel = manager.getPixelPosition();
@@ -341,6 +414,9 @@ public class Playing {
         }
 
         player.setAlliesManager(alliesManager);
+        System.out.println(countBrown);
+        System.out.println(countOrange);
+        System.out.println(countPurple);
     }
 
     private void moveEntities(float dT) {
@@ -407,14 +483,11 @@ public class Playing {
     }
 
     private void assignTargetPositions(Point center) {
-
             List<Point> positions = calculateFormation(center);
             playerManager.setTarget(positions.get(0));
             for (int i = 0; i < alliesMoveManager.size(); i++) {
                 alliesMoveManager.get(i).setTarget(positions.get(i + 1));
             }
-
-
     }
 
     public BrownAllies getBrownAllies() {
@@ -431,7 +504,7 @@ public class Playing {
     public void handlePlayerHit(Allies sacrificed) {
         if (sacrificed != null) {
             alliesMoveManager.removeIf(manager -> manager.getMovedObject() == sacrificed);
-            System.out.println("Removed Ally. Queue size: " + alliesManager.getAlliesQueue().size() + ", MoveManager size: " + alliesMoveManager.size());
+            // System.out.println("Removed Ally. Queue size: " + alliesManager.getAlliesQueue().size() + ", MoveManager size: " + alliesMoveManager.size());
             NoOfAlliesCurrent--;
             if (sacrificed instanceof BrownAllies) {
                 countBrown--;

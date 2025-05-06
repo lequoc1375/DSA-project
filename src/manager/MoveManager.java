@@ -261,4 +261,10 @@ public class MoveManager {
         return movingObject;
     }
 
+    public void cleanup() {
+        updateObjectCount(currentGrid, -1);
+        reservedPositions.remove(currentGrid);
+    }
+    
+
 }

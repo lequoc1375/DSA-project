@@ -2,6 +2,8 @@ package enemies;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Rectangle;
+
 import static main.GamePanel.TILE_SIZE;
 
 public abstract class Enemy {
@@ -65,5 +67,9 @@ public abstract class Enemy {
 
     public int getY() {
         return y;
+    }
+
+    public Rectangle getBound() {
+        return new Rectangle(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
     }
 }
