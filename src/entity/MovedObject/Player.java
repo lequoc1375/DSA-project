@@ -19,6 +19,8 @@ public class Player implements ObjectCanMove {
     private boolean shieldActive = false;
     private boolean isDead = false;
     private Playing playing;
+    
+    private int playerHealth = 1;
 
     public Player(int x, int y, Playing playing) {
         this.position = new Point(x, y);
@@ -62,10 +64,10 @@ public class Player implements ObjectCanMove {
         if (shieldActive) {
             breakShield();
 
-        } else if (alliesManager != null && !alliesManager.getAlliesQueue().isEmpty()) {
-            Allies sacrificed = alliesManager.getAlliesQueue().poll();
-            playing.handlePlayerHit(sacrificed);
+        } else if (playerHealth > 1) {
+            playerHealth--;
         } else {
+            setPlayerHealth(0);
             die();
         }
     }
@@ -89,4 +91,11 @@ public class Player implements ObjectCanMove {
         this.alliesManager = manager;
     }
 
+    public void setPlayerHealth(int playerHealth) {
+        this.playerHealth = playerHealth;
+    }
+
+    public int getPlayerHealth() {
+        return playerHealth;
+    }
 }

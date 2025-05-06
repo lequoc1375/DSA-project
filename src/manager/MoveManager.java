@@ -266,5 +266,10 @@ public class MoveManager {
         reservedPositions.remove(currentGrid);
     }
     
+    public Rectangle getBound() {
+        int x = (int) (pixelPos.x - TILE_SIZE / 2f);
+        int y = (int) (pixelPos.y - TILE_SIZE / 2f);
+        return new Rectangle(x, y, TILE_SIZE, TILE_SIZE);
+    }
 
 }

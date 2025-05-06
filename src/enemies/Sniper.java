@@ -108,7 +108,7 @@ public class Sniper extends Enemy {
             Bullet bullet = iterator.next();
             bullet.move();
 
-            if (bullet.getBounds().intersects(new Rectangle(player.getPixelPosition().x, player.getPixelPosition().y, 8, 8))) {
+            if (bullet.getBounds().intersects(player.getBound())) {
                 System.out.println("Player trúng đạn");
                 playerObject.playerIsHit();
                 iterator.remove();

@@ -61,7 +61,7 @@ public class Playing {
         initGenerate();
         // new Timer(500, e -> turret.fireBullet(player.getPosition())).start();
         new Timer(7654, e -> SpawnEnemies()).start();
-        new Timer(2000, e -> SpawnAllies()).start();
+        new Timer(15000, e -> SpawnAllies()).start();
 
     }
 
@@ -119,6 +119,8 @@ public class Playing {
         alliesManager.add(newAlly);
         alliesMoveManager.add(new MoveManager(newAlly));
         NoOfAlliesCurrent ++;
+        
+        player.setPlayerHealth(player.getPlayerHealth() + 1);
 
         mergeIfPossible(newAlly);
     }
@@ -395,6 +397,8 @@ public class Playing {
 //        for (Bullet bullet : bullets) {
 //            bullet.draw(g);
 //        }
+        g.setColor(Color.RED);
+        g.drawString("HP: " + player.getPlayerHealth(), 10, 20);
     }
 
     public void updateGame(float dT) {
