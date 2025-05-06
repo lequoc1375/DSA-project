@@ -2,7 +2,9 @@ package enemies;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.awt.RenderingHints;
 
 import static main.GamePanel.TILE_SIZE;
 
@@ -37,6 +39,9 @@ public abstract class Enemy {
     }
 
     public void render(Graphics g) {
+        Graphics2D g2d = (Graphics2D) g;
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
         int centerX = x * TILE_SIZE + TILE_SIZE / 2;
         int centerY = y * TILE_SIZE + TILE_SIZE / 2;
         int radius = TILE_SIZE / 2;

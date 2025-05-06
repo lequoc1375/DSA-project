@@ -9,17 +9,54 @@ public class PurpleAllies extends Allies {
     private MoveManager player;
     public static boolean isBlessing = false;
     public boolean isCooldown = false;
-    private Timer cooldownTimer;
     private boolean isBlessingActive = false;
+    private Timer cooldownTimer;
+    private Timer blessingTimer;
+    private int blessingDuration;
+    private int cooldownDuration;
+
     public PurpleAllies(int x, int y, MoveManager player) {
-        super(x, y, new Color(128, 0, 128)); // Màu tím
+        super(x, y, new Color(128, 0, 128)); 
         this.player = player;
+        applyUpgradeStats();
+    }
+
+    private void applyUpgradeStats() {
+        switch (this.getLevel()) {
+            case 1:
+                blessingDuration = 3000;
+                cooldownDuration = 6000;
+                break;
+            case 2:
+                blessingDuration = 4000;
+                cooldownDuration = 5000;
+                break;
+            case 3:
+                blessingDuration = 5000;
+                cooldownDuration = 4000;
+                break;
+            case 4:
+                blessingDuration = 6000;
+                cooldownDuration = 3000;
+                break;
+            case 5:
+                blessingDuration = 7000;
+                cooldownDuration = 2000;
+                break;
+            case 6:
+                blessingDuration = 10000;
+                cooldownDuration = 1000;
+                break;
+            default:
+                blessingDuration = 3000;
+                cooldownDuration = 6000;
+        }
     }
 
     public void bless() {
         if (isCooldown) return;
         isBlessing = true;
-        Timer blessingTimer = new Timer(5000, e -> isBlessing = false);
+        blessingTimer = new Timer(blessingDuration, e -> isBlessing = false);
         blessingTimer.setRepeats(false);
         blessingTimer.start();
 
@@ -29,7 +66,7 @@ public class PurpleAllies extends Allies {
     private void startCooldown() {
         isCooldown = true;
 
-        cooldownTimer = new Timer(1000, (ActionEvent event) -> {
+        cooldownTimer = new Timer(cooldownDuration, (ActionEvent event) -> {
             isCooldown = false;
         });
         cooldownTimer.setRepeats(false);
@@ -53,5 +90,6 @@ public class PurpleAllies extends Allies {
     @Override
     public void update() {
         super.update();
+        applyUpgradeStats();
     }
 }

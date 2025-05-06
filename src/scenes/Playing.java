@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Queue;
 import java.util.Random;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import javax.swing.*;
 import main.GamePanel;
@@ -62,7 +61,7 @@ public class Playing {
         initGenerate();
         // new Timer(500, e -> turret.fireBullet(player.getPosition())).start();
         new Timer(7654, e -> SpawnEnemies()).start();
-        new Timer(500, e -> SpawnAllies()).start();
+        new Timer(2000, e -> SpawnAllies()).start();
 
     }
 
@@ -414,9 +413,9 @@ public class Playing {
         }
 
         player.setAlliesManager(alliesManager);
-        System.out.println(countBrown);
-        System.out.println(countOrange);
-        System.out.println(countPurple);
+        // System.out.println(countBrown);
+        // System.out.println(countOrange);
+        // System.out.println(countPurple);
     }
 
     private void moveEntities(float dT) {

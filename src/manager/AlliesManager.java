@@ -8,9 +8,7 @@ import java.util.Queue;
 
 public class AlliesManager {
 
-
     private Queue<Allies> alliesQueue = new LinkedList<>();
-
 
     public void add(Allies ally) {
         alliesQueue.offer(ally);
@@ -20,18 +18,15 @@ public class AlliesManager {
         alliesQueue.remove(ally);
     }
 
-
     public void update() {
         for (Allies ally : alliesQueue) {
             ally.update();
         }
     }
 
-
     public void clear() {
         alliesQueue.clear();
     }
-
 
     public List<Allies> getAlliesList() {
         return new ArrayList<>(alliesQueue);

@@ -14,14 +14,49 @@ import static controller.MouseHandler.mouseY;
 public class OrangeAllies extends Allies {
     private boolean isTeleportCooldown = false;
     private Timer teleportCooldownTimer;
-    private final double teleportRange = 120.0;
+    private double teleportRange;
+    private int cooldown;
     public boolean isUseSkill = false;
     private MoveManager player;
     private boolean isEmpDisabled = false;
     public OrangeAllies(int x, int y, MoveManager player) {
         super(x, y, new Color(255, 165, 0));
         this.player = player;
+        applyUpgradeStats();
     }
+
+    private void applyUpgradeStats() {
+        switch (this.getLevel()) {
+            case 1:
+                teleportRange = 120.0;
+                cooldown = 3000;
+                break;
+            case 2:
+                teleportRange = 150.0;
+                cooldown = 2500;
+                break;
+            case 3:
+                teleportRange = 180.0;
+                cooldown = 2000;
+                break;
+            case 4:
+                teleportRange = 210.0;
+                cooldown = 1500;
+                break;
+            case 5:
+                teleportRange = 240.0;
+                cooldown = 1000;
+                break;
+            case 6:
+                teleportRange = 300.0;
+                cooldown = 500;
+                break;
+            default:
+                teleportRange = 120.0;
+                cooldown = 3000;
+        }
+    }
+
     public void useSkill() {
         if (isTeleportCooldown) return;
 
@@ -46,16 +81,14 @@ public class OrangeAllies extends Allies {
         player.teleportTo(newGrid);
 
 
-        isUseSkill = false;
-        isTeleportCooldown = true;
-        new Timer(3000, e -> isTeleportCooldown = false).start();
+        startTeleportCooldown();
     }
 
 
     private void startTeleportCooldown() {
         isUseSkill = false;
         isTeleportCooldown = true;
-        teleportCooldownTimer = new Timer(3000, e -> isTeleportCooldown = false);
+        teleportCooldownTimer = new Timer(cooldown, e -> isTeleportCooldown = false);
         teleportCooldownTimer.setRepeats(false);
         teleportCooldownTimer.start();
     }
@@ -69,6 +102,7 @@ public class OrangeAllies extends Allies {
     @Override
     public void update() {
         super.update();
+        applyUpgradeStats();
     }
 
     public void setUseSkill(boolean useSkill) {

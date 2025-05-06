@@ -19,6 +19,7 @@ public class BlueAllies extends Allies {
     private int attackRange;
     private int attackDelay;
     private double bulletSpeed;
+    private int bulletDamage;
 
     private boolean isAttacking = false;
     private Timer attackTimer = null;
@@ -36,31 +37,37 @@ public class BlueAllies extends Allies {
                 attackRange = 150;
                 attackDelay = 2000;
                 bulletSpeed = 1.2;
+                bulletDamage = 2;
                 break;
             case 2:
                 attackRange = 170;
                 attackDelay = 1800;
                 bulletSpeed = 1.4;
+                bulletDamage = 4;
                 break;
             case 3:
                 attackRange = 190;
                 attackDelay = 1600;
                 bulletSpeed = 1.6;
+                bulletDamage = 6;
                 break;
             case 4:
                 attackRange = 210;
                 attackDelay = 1400;
                 bulletSpeed = 1.8;
+                bulletDamage = 8;
                 break;
             case 5:
                 attackRange = 230;
                 attackDelay = 1200;
                 bulletSpeed = 2.0;
+                bulletDamage = 10;
                 break;
             case 6:
                 attackRange = 250;
                 attackDelay = 200;
                 bulletSpeed = 2.2;
+                bulletDamage = 12;
                 break;
         }
     }
@@ -153,6 +160,7 @@ public class BlueAllies extends Allies {
                 if(bullet.getBounds().intersects(enemy.getBound())) {
                     System.out.println("Enemies is attacked");
                     toRemove.add(bullet);
+                    enemy.takeDamage(bulletDamage);
                     break;
                 }
             }

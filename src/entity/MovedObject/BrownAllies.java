@@ -13,10 +13,46 @@ public class BrownAllies extends Allies {
     private Timer shieldDurationTimer;
     private MoveManager player;
     private Player playerObject;
+    private int shieldDuration;
+    private int cooldown;
+
     public BrownAllies(int x, int y, MoveManager playerMove, Player player) {
         super(x, y, new Color(139, 69, 19));
         this.player = playerMove;
         player.setBrownAllies(this);
+        applyUpgradeStats();
+    }
+
+    private void applyUpgradeStats() {
+        switch (this.getLevel()) {
+            case 1:
+                shieldDuration = 5000;
+                cooldown = 3000;
+                break;
+            case 2:
+                shieldDuration = 10000;
+                cooldown = 2500;
+                break;
+            case 3:
+                shieldDuration = 15000;
+                cooldown = 2000;
+                break;
+            case 4:
+                shieldDuration = 20000;
+                cooldown = 1500;
+                break;
+            case 5:
+                shieldDuration = 25000;
+                cooldown = 1000;
+                break;
+            case 6:
+                shieldDuration = 30000;
+                cooldown = 1000;
+                break;
+            default:
+                shieldDuration = 5000;
+                cooldown = 3000;
+        }
     }
 
     @Override
@@ -34,7 +70,7 @@ public class BrownAllies extends Allies {
         }
         if (!isCooldown && !isActive) {
             isActive = true;
-            shieldDurationTimer = new Timer(50000, (ActionEvent e) -> deactivateShield());
+            shieldDurationTimer = new Timer(shieldDuration, (ActionEvent e) -> deactivateShield());
             shieldDurationTimer.setRepeats(false);
             shieldDurationTimer.start();
         } else if (isCooldown) {
@@ -51,7 +87,7 @@ public class BrownAllies extends Allies {
 
     private void startCooldown() {
         isCooldown = true;
-        cooldownTimer = new Timer(2000, (ActionEvent e) -> isCooldown = false);
+        cooldownTimer = new Timer(cooldown, (ActionEvent e) -> isCooldown = false);
         cooldownTimer.setRepeats(false);
         cooldownTimer.start();
     }
@@ -70,6 +106,7 @@ public class BrownAllies extends Allies {
     @Override
     public void update() {
         super.update();
+        applyUpgradeStats();
     }
 
     public void breakShieldEarly() {

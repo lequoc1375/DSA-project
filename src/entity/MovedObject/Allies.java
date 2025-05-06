@@ -4,7 +4,9 @@ import enemies.EMPDisabler;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.RenderingHints;
 import java.util.Random;
 
 public  class Allies  implements ObjectCanMove{
@@ -54,29 +56,37 @@ public  class Allies  implements ObjectCanMove{
     }
 
     public void draw(Graphics g, int x, int y) {
-        switch(this.getLevel()) {
+        Graphics2D g2d = (Graphics2D) g;
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+        int outerRadius = 8;
+        int innerRadius = 6;
+    
+        switch (this.getLevel()) {
             case 1:
-                g.setColor(new Color(253,253,255));
+                g.setColor(new Color(180, 180, 180));
                 break;
             case 2:
-                g.setColor(new Color(69,203,103));
+                g.setColor(new Color(69, 203, 103));
                 break;
             case 3:
-                g.setColor(new Color(51,161,247));
+                g.setColor(new Color(51, 161, 247));
                 break;
             case 4:
-                g.setColor(new Color(163,67,255));
+                g.setColor(new Color(163, 67, 255));
                 break;
             case 5:
-                g.setColor(new Color(253,214,54));
+                g.setColor(new Color(253, 214, 54));
                 break;
             case 6:
-                g.setColor(new Color(239,34,38));  
-                break;  
+                g.setColor(new Color(239, 34, 38));
+                break;
         }
-        g.fillOval(x-4, y-4, 8, 8);
+    
+        g.fillOval(x - outerRadius / 2, y - outerRadius / 2, outerRadius, outerRadius);
+    
         g.setColor(color);
-        g.fillOval(x-3, y-3, 6, 6);
+        g.fillOval(x - innerRadius / 2, y - innerRadius / 2, innerRadius, innerRadius);
     }
 
     public Color getColor() {

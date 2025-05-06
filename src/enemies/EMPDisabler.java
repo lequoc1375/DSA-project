@@ -108,6 +108,7 @@ public class EMPDisabler extends Enemy {
     public void render(Graphics g) {
         super.render(g);
         Graphics2D g2d = (Graphics2D) g;
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
         int centerX = x * 16 + width;
         int centerY = y * 16 + height;
