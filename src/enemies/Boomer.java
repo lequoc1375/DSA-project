@@ -71,6 +71,9 @@ public class Boomer extends Enemy {
 
             if (boom.isExplosionOver()) {
                 iter.remove();
+                if (player.getPosition().equals(boomTile)) {
+                    player.playerIsHit();
+                }
             }
         }
     }

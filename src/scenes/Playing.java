@@ -59,8 +59,7 @@ public class Playing {
 
     public Playing() {
         initGenerate();
-        // new Timer(500, e -> turret.fireBullet(player.getPosition())).start();
-        new Timer(7654, e -> SpawnEnemies()).start();
+        new Timer(5000, e -> SpawnEnemies()).start();
         new Timer(15000, e -> SpawnAllies()).start();
 
     }
@@ -71,31 +70,50 @@ public class Playing {
         int y = r.nextInt(ROWS);
         switch (r.nextInt(4) + 1) {
             case 1:
-                if (countBreaker < 2) {
+                if (countBreaker < 3) {
                     enemiesManager.add(new EMPDisabler(x, y, 100, 2500, playerManager, () -> alliesManager.getAlliesList(), player,() -> alliesMoveManager));
                     countBreaker++;
                 }
                 break;
             case 2:
-                if (countBoomer < 2) {
+                if (countBoomer < 3) {
                     enemiesManager.add(new Boomer(x, y, 75, 20000, player));
                     countBoomer++;
                 }
                 break;
             case 3:
                 if (countSlower < 1) {
-                    enemiesManager.add(new Slower(x, y, 100, 5000, player)); // Slower
+                    enemiesManager.add(new Slower(x, y, 100, 5000, player)); 
                     countSlower++;
                 }
                 break;
             case 4:
-                if (countSniper < 1) {
+                if (countSniper < 3) {
                     enemiesManager.add(new Sniper(x, y, 100, 7500, playerManager, player)); // Sniper
                     countSniper++;
                 }
                 break;
         }
     }
+
+    private void removeDeadEnemies() {
+        List<Enemy> toRemove = new ArrayList<>();
+        for (Enemy e : enemiesManager.getEnemies()) {
+            if (e.getEnemyHealth() <= 0) {
+                if (e instanceof EMPDisabler) countBreaker--;
+                else if (e instanceof Boomer) countBoomer--;
+                else if (e instanceof Slower) countSlower--;
+                else if (e instanceof Sniper) countSniper--;
+                toRemove.add(e);
+            }
+        }
+    
+        for (Enemy dead : toRemove) {
+            enemiesManager.remove(dead);
+        }
+    }
+    
+    
 
     private void SpawnAllies() {
         if (alliesManager.getAlliesList().size() >= noOfAllies) {
@@ -271,14 +289,14 @@ public class Playing {
     }
 
     private void upgradeRandomSpecialAlly() {
-        List<Allies> bonusList = new ArrayList<>();
+        List<Allies> specialList = new ArrayList<>();
     
-        if (brownAllies != null) bonusList.add(brownAllies);
-        if (orangeAllies != null) bonusList.add(orangeAllies);
-        if (purpleAllies != null) bonusList.add(purpleAllies);
+        if (brownAllies != null) specialList.add(brownAllies);
+        if (orangeAllies != null) specialList.add(orangeAllies);
+        if (purpleAllies != null) specialList.add(purpleAllies);
     
-        if (!bonusList.isEmpty()) {
-            Allies toUpgrade = bonusList.get(random.nextInt(bonusList.size()));
+        if (!specialList.isEmpty()) {
+            Allies toUpgrade = specialList.get(random.nextInt(specialList.size()));
     
             String type = toUpgrade.getType();
             int level = toUpgrade.getLevel();
@@ -420,6 +438,8 @@ public class Playing {
         // System.out.println(countBrown);
         // System.out.println(countOrange);
         // System.out.println(countPurple);
+
+        removeDeadEnemies();
     }
 
     private void moveEntities(float dT) {

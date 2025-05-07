@@ -68,31 +68,34 @@ public class Boom {
     }
 
     private void drawExplosion(Graphics g) {
-        Graphics2D g2d = (Graphics2D) g;
-     
-        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-        int x = point.x;
-        int y = point.y;
-        int size = TILE_SIZE; // 16 pixel
-        int centerX = x + size / 2;
-        int centerY = y + size / 2;
-
-   
-        int explosionRadius = 10;
-        int diameter = explosionRadius * 2;
-
-      
-        float[] fractions = {0.0f, 0.5f, 1.0f};
-        Color[] colors = {
+        long elapsed = System.currentTimeMillis() - explosionStartTime;
+    
+        // Nhấp nháy mỗi 200ms (ẩn/hiện luân phiên)
+        if ((elapsed / 200) % 2 == 0) {
+            Graphics2D g2d = (Graphics2D) g;
+            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+    
+            int x = point.x;
+            int y = point.y;
+            int size = TILE_SIZE;
+            int centerX = x + size / 2;
+            int centerY = y + size / 2;
+    
+            int explosionRadius = 10;
+            int diameter = explosionRadius * 2;
+    
+            float[] fractions = {0.0f, 0.5f, 1.0f};
+            Color[] colors = {
                 new Color(255, 255, 0, 255), 
-                new Color(255, 165, 0, 200),    
-                new Color(255, 0, 0, 0)       
-        };
-        RadialGradientPaint rgp = new RadialGradientPaint(centerX, centerY, explosionRadius, fractions, colors);
-        g2d.setPaint(rgp);
-        g2d.fillOval(centerX - explosionRadius, centerY - explosionRadius, diameter, diameter);
+                new Color(255, 165, 0, 200), 
+                new Color(255, 0, 0, 0)      
+            };
+            RadialGradientPaint rgp = new RadialGradientPaint(centerX, centerY, explosionRadius, fractions, colors);
+            g2d.setPaint(rgp);
+            g2d.fillOval(centerX - explosionRadius, centerY - explosionRadius, diameter, diameter);
+        }
     }
+    
 
   
     public boolean isExplosionOver() {

@@ -12,6 +12,10 @@ public class EnemiesManager {
 
     }
 
+    public void remove(Enemy enemy) {
+        enemies.remove(enemy);
+    }
+
     public void update() {
         for (Enemy enemy : enemies) {
             enemy.update();
