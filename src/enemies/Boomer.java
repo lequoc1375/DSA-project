@@ -82,5 +82,6 @@ public class Boomer extends Enemy {
         for (Boom boom : boomList) {
             boom.draw(g);
         }
+
     }
 }

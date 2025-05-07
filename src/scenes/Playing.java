@@ -504,20 +504,21 @@ public class Playing {
     public PurpleAllies getPurpleAllies() {
         return purpleAllies;
     }
-    public void handlePlayerHit(Allies sacrificed) {
-        if (sacrificed != null) {
-            alliesMoveManager.removeIf(manager -> manager.getMovedObject() == sacrificed);
-            // System.out.println("Removed Ally. Queue size: " + alliesManager.getAlliesQueue().size() + ", MoveManager size: " + alliesMoveManager.size());
-            NoOfAlliesCurrent--;
-            if (sacrificed instanceof BrownAllies) {
-                countBrown--;
-            } else if (sacrificed instanceof OrangeAllies) {
-                countOrange--;
-            } else if (sacrificed instanceof PurpleAllies) {
-                countPurple--;
-            }
+    
+    // public void handlePlayerHit(Allies sacrificed) {
+    //     if (sacrificed != null) {
+    //         alliesMoveManager.removeIf(manager -> manager.getMovedObject() == sacrificed);
+    //         // System.out.println("Removed Ally. Queue size: " + alliesManager.getAlliesQueue().size() + ", MoveManager size: " + alliesMoveManager.size());
+    //         NoOfAlliesCurrent--;
+    //         if (sacrificed instanceof BrownAllies) {
+    //             countBrown--;
+    //         } else if (sacrificed instanceof OrangeAllies) {
+    //             countOrange--;
+    //         } else if (sacrificed instanceof PurpleAllies) {
+    //             countPurple--;
+    //         }
 
-        }
-    }
+    //     }
+    // }
 
 }

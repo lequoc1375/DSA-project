@@ -143,6 +143,7 @@ public class EMPDisabler extends Enemy {
                 drawLightningEffect(g2d, allyCenterX, allyCenterY, shieldRadius);
             }
         }
+
     }
 
     private void drawLightningEffect(Graphics2D g2d, int centerX, int centerY, int maxLength) {

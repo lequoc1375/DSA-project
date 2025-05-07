@@ -143,6 +143,7 @@ public class Sniper extends Enemy {
         for (Bullet bullet : enemyBullets) {
             bullet.draw(g);
         }
+
     }
 
 

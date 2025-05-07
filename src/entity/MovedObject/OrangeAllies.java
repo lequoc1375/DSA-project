@@ -96,7 +96,7 @@ public class OrangeAllies extends Allies {
     @Override
     public void draw(Graphics g, int x, int y) {
         super.draw(g, x, y);
-
+        
     }
 
     @Override
