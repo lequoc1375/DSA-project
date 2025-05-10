@@ -22,6 +22,9 @@ public class SoundManager {
 
             if (backgroundUrl == null) {
                 backgroundUrl = getClass().getClassLoader().getResource("src\\resources\\gamemusic.wav");
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
             }
             AudioInputStream backgroundStream = AudioSystem.getAudioInputStream(backgroundUrl);
