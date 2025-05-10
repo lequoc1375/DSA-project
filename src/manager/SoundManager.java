@@ -11,10 +11,18 @@ public class SoundManager {
 
     public SoundManager() {
         try {
+<<<<<<< Updated upstream
             // Load background music
             URL backgroundUrl = getClass().getResource("src\\resources\\[EVANO.COM] Envici November - Original Instrument-HQ.wav");
             if (backgroundUrl == null) {
                 backgroundUrl = new File("src\\resources\\[EVANO.COM] Envici November - Original Instrument-HQ.wav").toURI().toURL();
+=======
+           
+            URL backgroundUrl = getClass().getClassLoader().getResource("src\\resources\\gamemusic.wav");
+
+            if (backgroundUrl == null) {
+                backgroundUrl = getClass().getClassLoader().getResource("src\\resources\\gamemusic.wav");
+>>>>>>> Stashed changes
             }
             AudioInputStream backgroundStream = AudioSystem.getAudioInputStream(backgroundUrl);
             backgroundClip = AudioSystem.getClip();
