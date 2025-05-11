@@ -24,12 +24,13 @@ public class Setting {
         soundManager.playBackground(); // Start background music
 
         // Button dimensions and positions
-        int buttonWidth = 200;
-        int buttonHeight = 50;
-        int buttonSpacing = 20;
-        int centerX = (GamePanel.COLS * GamePanel.TILE_SIZE - buttonWidth) / 2; // 380
-        int totalHeight = 2 * buttonHeight + buttonSpacing; // 120 (adjusted for 2 buttons)
-        int startY = (GamePanel.ROWS * GamePanel.TILE_SIZE - totalHeight) / 2; // 420 (adjusted)
+        int buttonWidth = 250;
+        int buttonHeight = 60;
+        int buttonSpacing = 30;
+        int fullWidth = 1000;
+        int centerX = (fullWidth - buttonWidth) / 2; 
+        int totalHeight = 2 * buttonHeight + buttonSpacing; 
+        int startY = (GamePanel.ROWS * GamePanel.TILE_SIZE - totalHeight) / 2; 
 
         // Initialize buttons
         soundButton = new Button("Sound: " + (soundOn ? "ON" : "OFF"), centerX, startY, buttonWidth, buttonHeight);
@@ -39,20 +40,23 @@ public class Setting {
     public void draw(Graphics g) {
         Graphics2D g2d = (Graphics2D) g;
 
+        int panelWidth = gamePanel.getPreferredSize().width;
+        int panelHeight = GamePanel.ROWS * GamePanel.TILE_SIZE;
+
         // Draw gradient background
         GradientPaint gradient = new GradientPaint(
             0, 0, new Color(100, 149, 237), // Cornflower blue
-            0, GamePanel.ROWS * GamePanel.TILE_SIZE, Color.WHITE, true
+            0, panelWidth, Color.WHITE, true
         );
         g2d.setPaint(gradient);
-        g2d.fillRect(0, 0, GamePanel.COLS * GamePanel.TILE_SIZE, GamePanel.ROWS * GamePanel.TILE_SIZE);
+        g2d.fillRect(0, 0, panelWidth, panelHeight);
 
         // Draw title
         g2d.setColor(Color.DARK_GRAY);
         g2d.setFont(new Font("Arial", Font.BOLD, 48));
         String title = "Settings";
         int titleWidth = g2d.getFontMetrics().stringWidth(title);
-        g2d.drawString(title, (GamePanel.COLS * GamePanel.TILE_SIZE - titleWidth) / 2, 150);
+        g2d.drawString(title, (panelWidth - titleWidth) / 2, 150);
 
         // Draw buttons with shadow effect
         drawButtonWithShadow(g2d, soundButton);
@@ -82,9 +86,11 @@ public class Setting {
                                     (int) soundButton.getBounds().width, (int) soundButton.getBounds().height);
             soundManager.playEffect(); // Play click sound on toggle
             System.out.println("Sound toggled: " + (soundOn ? "ON" : "OFF"));
+            gamePanel.repaint();
         } else if (backButton.getBounds().contains(mouseX, mouseY)) {
             soundManager.playEffect(); // Play click sound on back
             GameStates.SetGameState(GameStates.MENU); // Return to MENU
+            gamePanel.repaint();
             System.out.println("Back Button Clicked: Returning to MENU state!");
         }
     }

@@ -14,7 +14,7 @@ public class MouseHandler extends MouseAdapter {
     }
 
     @Override
-    public void mousePressed(MouseEvent e) {
+    public void mouseClicked(MouseEvent e) {
         gamePanel.onMouseClick(e);
     }
 

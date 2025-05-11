@@ -20,7 +20,7 @@ public class ScenesManager {
 				gamePanel.getPlaying().draw(g);
 				break;
 			case SETTINGS:
-				gamePanel.getSetting().draw(g); // Render the Setting screen
+				gamePanel.getSetting().draw(g);
 				break;
 		}
 	}

@@ -26,14 +26,18 @@ public class GamePanel extends JPanel implements Runnable {
     private ControlPanel controlPanel;
     private ReentrantLock lock = new ReentrantLock();
     private boolean isRunning = true;
+    private JPanel gameArea;
 
     public GamePanel() {
         setLayout(new BorderLayout());
 
-        JPanel gameArea = new JPanel() {
+        gameArea = new JPanel() {
             @Override
             public Dimension getPreferredSize() {
-                return new Dimension(COLS * TILE_SIZE, ROWS * TILE_SIZE);
+                int width = controlPanel.isVisible() ? 
+                            COLS * TILE_SIZE : 
+                            COLS * TILE_SIZE + controlPanel.getPreferredSize().width;
+                return new Dimension(width, ROWS * TILE_SIZE);
             }
 
             @Override
@@ -51,8 +55,6 @@ public class GamePanel extends JPanel implements Runnable {
         gameArea.requestFocusInWindow();
         gameArea.addMouseListener(new MouseHandler(this));
         gameArea.addMouseMotionListener(new MouseHandler(this));
-        gameArea.addKeyListener(new KeyHandler(playing));
-
         soundManager = new SoundManager();
         playing = new Playing();
         menu = new Menu(this);
@@ -60,10 +62,14 @@ public class GamePanel extends JPanel implements Runnable {
         scenesManager = new ScenesManager(this);
         controlPanel = new ControlPanel(this);
 
+        gameArea.addKeyListener(new KeyHandler(playing));
+
         add(gameArea, BorderLayout.CENTER);
         add(controlPanel, BorderLayout.EAST);
 
-        setPreferredSize(new Dimension(COLS * TILE_SIZE + 100, ROWS * TILE_SIZE));
+        updateControlPanelVisibility();
+
+        setPreferredSize(new Dimension(COLS * TILE_SIZE + 200, ROWS * TILE_SIZE));
 
         // Thread render
         new Thread(() -> {
@@ -82,10 +88,15 @@ public class GamePanel extends JPanel implements Runnable {
         // Thread manage Playing
         new Thread(() -> {
             while (true) {
-                if (isRunning && !controlPanel.isStopped() && GameStates.gameStates == GameStates.PLAYING) {
+                if (isRunning && !controlPanel.isStopped()) {
                     lock.lock();
                     try {
-                        playing.updateGame(TIME_STEP);
+                        switch (GameStates.gameStates) {
+                            case PLAYING -> {
+                                playing.updateGame(TIME_STEP);
+                                controlPanel.updateHealthLabel();
+                            }
+                        }
                     } finally {
                         lock.unlock();
                     }
@@ -119,9 +130,7 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     @Override
-    public void run() {
-        
-    }
+    public void run() {}
 
     public void onMouseClick(MouseEvent e) {
         lock.lock();
@@ -138,12 +147,28 @@ public class GamePanel extends JPanel implements Runnable {
         }
     }
 
+    public void onMouseMoved(MouseEvent e) {
+        lock.lock();
+        try {
+            if (GameStates.gameStates == GameStates.MENU) {
+                menu.onMouseMoved(e);
+            } else if (GameStates.gameStates == GameStates.PLAYING) {
+
+            } else if (GameStates.gameStates == GameStates.SETTINGS) {
+
+            }
+        } finally {
+            lock.unlock();
+        }
+    }
+
     public void startGame() {
         lock.lock();
         try {
-            GameStates.SetGameState(GameStates.PLAYING); 
-            playing.startGame(); 
+            GameStates.SetGameState(GameStates.PLAYING);
+            playing.startGame();
             isRunning = true;
+            updateControlPanelVisibility(); 
             System.out.println("Game started");
         } finally {
             lock.unlock();
@@ -154,7 +179,7 @@ public class GamePanel extends JPanel implements Runnable {
         lock.lock();
         try {
             isRunning = false;
-            playing.pauseGame(); 
+            playing.pauseGame();
             System.out.println("Game stopped");
         } finally {
             lock.unlock();
@@ -165,7 +190,7 @@ public class GamePanel extends JPanel implements Runnable {
         lock.lock();
         try {
             isRunning = true;
-            playing.startGame(); 
+            playing.startGame();
             System.out.println("Game resumed");
         } finally {
             lock.unlock();
@@ -180,6 +205,37 @@ public class GamePanel extends JPanel implements Runnable {
         } finally {
             lock.unlock();
         }
+    }
+
+    public void backToMenu() {
+        GameStates.SetGameState(GameStates.MENU);
+        isRunning = false;
+        playing.pauseGame();
+        updateControlPanelVisibility();
+        repaint();
+
+        new Thread(() -> {
+            while (true) {
+                if (GameStates.gameStates == GameStates.MENU) {
+                    menu.update();  
+                    gameArea.repaint(); 
+                }
+                try {
+                    Thread.sleep(16); 
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+
+    // Update ControlPanel visibility based on game state
+    private void updateControlPanelVisibility() {
+        boolean shouldShow = GameStates.gameStates == GameStates.PLAYING || GameStates.gameStates == GameStates.SETTINGS;
+        controlPanel.setVisible(shouldShow);
+        gameArea.revalidate(); // Adjust layout
+        gameArea.repaint();
     }
 
     public Playing getPlaying() {
