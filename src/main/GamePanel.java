@@ -4,6 +4,7 @@ import controller.KeyHandler;
 import controller.MouseHandler;
 import java.awt.*;
 import java.awt.event.MouseEvent;
+import java.util.concurrent.locks.ReentrantLock;
 import javax.swing.*;
 import manager.ScenesManager;
 import manager.SoundManager;
@@ -22,53 +23,153 @@ public class GamePanel extends JPanel implements Runnable {
     private Playing playing;
     private Setting setting;
     private SoundManager soundManager;
+    private ControlPanel controlPanel;
+    private ReentrantLock lock = new ReentrantLock();
+    private boolean isRunning = true;
 
     public GamePanel() {
-        setPreferredSize(new Dimension(COLS * TILE_SIZE, ROWS * TILE_SIZE));
-        setFocusable(true);
-        requestFocusInWindow();
+        setLayout(new BorderLayout()); 
+
+       
+        JPanel gameArea = new JPanel() {
+            @Override
+            public Dimension getPreferredSize() {
+                return new Dimension(COLS * TILE_SIZE, ROWS * TILE_SIZE);
+            }
+
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                lock.lock();
+                try {
+                    scenesManager.render(g);
+                } finally {
+                    lock.unlock();
+                }
+            }
+        };
+        gameArea.setFocusable(true);
+        gameArea.requestFocusInWindow();
+        gameArea.addMouseListener(new MouseHandler(this));
+        gameArea.addMouseMotionListener(new MouseHandler(this));
+        gameArea.addKeyListener(new KeyHandler(playing));
+
+   
         soundManager = new SoundManager();
-        playing = new Playing(); 
-        menu = new Menu(); 
-        setting = new Setting(this); 
+        playing = new Playing();
+        menu = new Menu();
+        setting = new Setting(this);
         scenesManager = new ScenesManager(this);
-        addMouseListener(new MouseHandler(this));
-        addMouseMotionListener(new MouseHandler(this));
-        addKeyListener(new KeyHandler(playing));
-        new Thread(this).start();
-    }
+        controlPanel = new ControlPanel(this);
+
+      
+        add(gameArea, BorderLayout.CENTER);
+        add(controlPanel, BorderLayout.EAST);
+
     
+        setPreferredSize(new Dimension(COLS * TILE_SIZE + 100, ROWS * TILE_SIZE));
+
+     
+        new Thread(() -> {
+            while (true) {
+                if (isRunning || !controlPanel.isStopped()) {
+                    gameArea.repaint();
+                }
+                try {
+                    Thread.sleep(16); 
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+
+     
+        new Thread(() -> {
+            while (true) {
+                if (isRunning && !controlPanel.isStopped() && GameStates.gameStates == GameStates.PLAYING) {
+                    lock.lock();
+                    try {
+                        playing.updateGame(TIME_STEP);
+                    } finally {
+                        lock.unlock();
+                    }
+                }
+                try {
+                    Thread.sleep((int) (TIME_STEP * 1000));
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+
+       
+        new Thread(() -> {
+            while (true) {
+                if (isRunning && !controlPanel.isStopped() && soundManager.isSoundOn()) {
+                    lock.lock();
+                    try {
+                        soundManager.playBackground();
+                    } finally {
+                        lock.unlock();
+                    }
+                }
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
     @Override
     public void run() {
-        while (true) {
+      
+    }
+
+    
+    public  void onMouseClick(MouseEvent e) {
+        lock.lock();
+        try {
             if (GameStates.gameStates == GameStates.PLAYING) {
-                playing.updateGame(TIME_STEP);
+                playing.onMouseClick(e);
+            } else if (GameStates.gameStates == GameStates.MENU) {
+                menu.onMouseClick(e);
+            } else if (GameStates.gameStates == GameStates.SETTINGS) {
+                setting.onMouseClick(e);
             }
-            if (soundManager.isSoundOn()) {
-                soundManager.playBackground(); 
-            }
-            repaint();
-            try {
-                Thread.sleep((int) (TIME_STEP * 1000));
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+        } finally {
+            lock.unlock();
         }
     }
-    
-    @Override
-    protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        scenesManager.render(g);
+
+    public void stopGame() {
+        lock.lock();
+        try {
+            isRunning = false;
+            System.out.println("Game stopped");
+        } finally {
+            lock.unlock();
+        }
     }
-    
-    public void onMouseClick(MouseEvent e) {
-        if (GameStates.gameStates == GameStates.PLAYING) {
-            playing.onMouseClick(e);
-        } else if (GameStates.gameStates == GameStates.MENU) {
-            menu.onMouseClick(e);
-        } else if (GameStates.gameStates == GameStates.SETTINGS) {
-            setting.onMouseClick(e);
+
+    public void resumeGame() {
+        lock.lock();
+        try {
+            isRunning = true;
+            System.out.println("Game resumed");
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public void exitGame() {
+        lock.lock();
+        try {
+            isRunning = false;
+            System.exit(0);
+        } finally {
+            lock.unlock();
         }
     }
 
