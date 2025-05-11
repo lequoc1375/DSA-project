@@ -26,6 +26,7 @@ import manager.EnemiesManager;
 import manager.MoveManager;
 
 public class Playing {
+    private boolean isActive = false;
 
     private List<Bullet> bullets = new ArrayList<>();
     private List<MoveManager> alliesMoveManager = new ArrayList<>();
@@ -57,11 +58,38 @@ public class Playing {
     private int MaxLevelOfBlue = 1;
     private final Random random = new Random();
 
+    private Timer enemySpawnTimer; 
+    private Timer allySpawnTimer;
+
     public Playing() {
         initGenerate();
-        new Timer(5000, e -> SpawnEnemies()).start();
-        new Timer(15000, e -> SpawnAllies()).start();
+    }
 
+    public void startGame() {
+        isActive = true;
+        enemySpawnTimer = new Timer(5000, e -> {
+            if (isActive) {
+                SpawnEnemies();
+            }
+        });
+        enemySpawnTimer.start();
+
+        allySpawnTimer = new Timer(15000, e -> {
+            if (isActive) {
+                SpawnAllies();
+            }
+        });
+        allySpawnTimer.start();
+    }
+
+    public void pauseGame() {
+        isActive = false;
+        if (enemySpawnTimer != null) {
+            enemySpawnTimer.stop();
+        }
+        if (allySpawnTimer != null) {
+            allySpawnTimer.stop();
+        }
     }
 
     private void SpawnEnemies() {
@@ -77,7 +105,7 @@ public class Playing {
                 break;
             case 2:
                 if (countBoomer < 3) {
-                    enemiesManager.add(new Boomer(x, y, 75, 20000, player));
+                    enemiesManager.add(new Boomer(x, y, 75, 20000, player, alliesManager));
                     countBoomer++;
                 }
                 break;

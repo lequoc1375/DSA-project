@@ -70,7 +70,6 @@ public class Boom {
     private void drawExplosion(Graphics g) {
         long elapsed = System.currentTimeMillis() - explosionStartTime;
     
-        // Nhấp nháy mỗi 200ms (ẩn/hiện luân phiên)
         if ((elapsed / 200) % 2 == 0) {
             Graphics2D g2d = (Graphics2D) g;
             g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);

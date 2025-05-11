@@ -7,24 +7,24 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Rectangle2D;
-import javax.swing.JFrame;
-import ui.Button;
 import main.GamePanel;
+import ui.Button;
 
 public class Menu {
     private Button playButton;
     private Button settingsButton;
     private Button exitButton;
+    private GamePanel gamePanel; 
 
-    public Menu() {
+    public Menu(GamePanel gamePanel) {
+        this.gamePanel = gamePanel; 
 
         int buttonWidth = 200;
         int buttonHeight = 50;
         int buttonSpacing = 20;
         int centerX = (GamePanel.COLS * GamePanel.TILE_SIZE - buttonWidth) / 2;
-        int totalHeight = 3 * buttonHeight + 2 * buttonSpacing; // 190
+        int totalHeight = 3 * buttonHeight + 2 * buttonSpacing;
         int startY = (GamePanel.ROWS * GamePanel.TILE_SIZE - totalHeight) / 2;
-
 
         playButton = new Button("Play", centerX, startY, buttonWidth, buttonHeight);
         settingsButton = new Button("Settings", centerX, startY + buttonHeight + buttonSpacing, buttonWidth, buttonHeight);
@@ -33,7 +33,6 @@ public class Menu {
 
     public void draw(Graphics g) {
         Graphics2D g2d = (Graphics2D) g;
-
 
         GradientPaint gradient = new GradientPaint(
                 0, 0, new Color(135, 206, 250), // Sky blue
@@ -49,7 +48,6 @@ public class Menu {
         int titleWidth = g2d.getFontMetrics().stringWidth(title);
         g2d.drawString(title, (GamePanel.COLS * GamePanel.TILE_SIZE - titleWidth) / 2, 150);
 
-        // Draw buttons with shadow effect
         drawButtonWithShadow(g2d, playButton);
         drawButtonWithShadow(g2d, settingsButton);
         drawButtonWithShadow(g2d, exitButton);
@@ -61,7 +59,6 @@ public class Menu {
         g2d.fillRect((int) bounds.getX() + 5, (int) bounds.getY() + 5,
                 (int) bounds.getWidth(), (int) bounds.getHeight());
 
-
         button.draw(g2d);
     }
 
@@ -70,13 +67,14 @@ public class Menu {
         int mouseY = e.getY();
 
         if (playButton.getBounds().contains(mouseX, mouseY)) {
-            GameStates.SetGameState(GameStates.PLAYING);
-            System.out.println("Play Button Clicked: Switching to PLAYING state!");
+            gamePanel.startGame(); 
+            System.out.println("Play Button Clicked: Starting game!");
         } else if (settingsButton.getBounds().contains(mouseX, mouseY)) {
-            GameStates.SetGameState(GameStates.SETTINGS); // Switch to SETTINGS state
+            GameStates.SetGameState(GameStates.SETTINGS);
             System.out.println("Settings Button Clicked: Switching to SETTINGS state!");
         } else if (exitButton.getBounds().contains(mouseX, mouseY)) {
-            System.exit(0);
+            gamePanel.exitGame();
+            System.out.println("Exit Button Clicked: Exiting game!");
         }
     }
 }

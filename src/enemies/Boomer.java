@@ -2,7 +2,10 @@ package enemies;
 
 import entity.Barrier;
 import entity.Boom;
+import entity.MovedObject.Allies;
 import entity.MovedObject.Player;
+import manager.AlliesManager;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.*;
@@ -13,14 +16,16 @@ import static main.GamePanel.*;
 public class Boomer extends Enemy {
     private List<Boom> boomList;
     private List<Boom> pendingBooms;
+    private AlliesManager alliesManager;
     private Timer attackTimer = null;
     private Player player;
 
-    public Boomer(int x, int y, int health, float fireRate, Player player) {
+    public Boomer(int x, int y, int health, float fireRate, Player player, AlliesManager alliesManager) {
         super(x, y, health, fireRate, new Color(199, 21, 133));
         boomList = new ArrayList<>();
         pendingBooms = new ArrayList<>();
         this.player = player;
+        this.alliesManager = alliesManager;
     }
 
     @Override
@@ -67,6 +72,12 @@ public class Boomer extends Enemy {
 
             if (player.getPosition().equals(boomTile)) {
                 boom.triggerExplosion();
+            }
+
+            for(Allies ally : alliesManager.getAlliesQueue()) {
+                if(ally.getPosition().equals(boomTile)) {
+                    boom.triggerExplosion();
+                }
             }
 
             if (boom.isExplosionOver()) {

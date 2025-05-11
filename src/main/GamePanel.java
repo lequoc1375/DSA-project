@@ -28,9 +28,8 @@ public class GamePanel extends JPanel implements Runnable {
     private boolean isRunning = true;
 
     public GamePanel() {
-        setLayout(new BorderLayout()); 
+        setLayout(new BorderLayout());
 
-       
         JPanel gameArea = new JPanel() {
             @Override
             public Dimension getPreferredSize() {
@@ -54,36 +53,33 @@ public class GamePanel extends JPanel implements Runnable {
         gameArea.addMouseMotionListener(new MouseHandler(this));
         gameArea.addKeyListener(new KeyHandler(playing));
 
-   
         soundManager = new SoundManager();
         playing = new Playing();
-        menu = new Menu();
+        menu = new Menu(this);
         setting = new Setting(this);
         scenesManager = new ScenesManager(this);
         controlPanel = new ControlPanel(this);
 
-      
         add(gameArea, BorderLayout.CENTER);
         add(controlPanel, BorderLayout.EAST);
 
-    
         setPreferredSize(new Dimension(COLS * TILE_SIZE + 100, ROWS * TILE_SIZE));
 
-     
+        // Thread render
         new Thread(() -> {
             while (true) {
                 if (isRunning || !controlPanel.isStopped()) {
                     gameArea.repaint();
                 }
                 try {
-                    Thread.sleep(16); 
+                    Thread.sleep(16); // ~60 FPS
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
         }).start();
 
-     
+        // Thread manage Playing
         new Thread(() -> {
             while (true) {
                 if (isRunning && !controlPanel.isStopped() && GameStates.gameStates == GameStates.PLAYING) {
@@ -102,7 +98,7 @@ public class GamePanel extends JPanel implements Runnable {
             }
         }).start();
 
-       
+        // Thread manage sound
         new Thread(() -> {
             while (true) {
                 if (isRunning && !controlPanel.isStopped() && soundManager.isSoundOn()) {
@@ -124,11 +120,10 @@ public class GamePanel extends JPanel implements Runnable {
 
     @Override
     public void run() {
-      
+        
     }
 
-    
-    public  void onMouseClick(MouseEvent e) {
+    public void onMouseClick(MouseEvent e) {
         lock.lock();
         try {
             if (GameStates.gameStates == GameStates.PLAYING) {
@@ -143,10 +138,23 @@ public class GamePanel extends JPanel implements Runnable {
         }
     }
 
+    public void startGame() {
+        lock.lock();
+        try {
+            GameStates.SetGameState(GameStates.PLAYING); 
+            playing.startGame(); 
+            isRunning = true;
+            System.out.println("Game started");
+        } finally {
+            lock.unlock();
+        }
+    }
+
     public void stopGame() {
         lock.lock();
         try {
             isRunning = false;
+            playing.pauseGame(); 
             System.out.println("Game stopped");
         } finally {
             lock.unlock();
@@ -157,6 +165,7 @@ public class GamePanel extends JPanel implements Runnable {
         lock.lock();
         try {
             isRunning = true;
+            playing.startGame(); 
             System.out.println("Game resumed");
         } finally {
             lock.unlock();
