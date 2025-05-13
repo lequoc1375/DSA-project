@@ -18,10 +18,9 @@ public class GamePanel extends JPanel implements Runnable {
     private static final float TIME_STEP = 0.01887f;
     private ScenesManager scenesManager;
     private Playing playing;
-    private SoundManager soundManager;
     private ControlPanel controlPanel;
     private ReentrantLock lock = new ReentrantLock();
-    private boolean isRunning = true;
+    private boolean isRunning = false;
     private JPanel gameArea;
 
     public GamePanel() {
@@ -49,14 +48,13 @@ public class GamePanel extends JPanel implements Runnable {
         };
         gameArea.setFocusable(true);
         gameArea.requestFocusInWindow();
-        addMouseListener(new MouseHandler(this));
-        addMouseMotionListener(new MouseHandler(this));
-        soundManager = new SoundManager();
+        gameArea.addMouseListener(new MouseHandler(this));
+        gameArea.addMouseMotionListener(new MouseHandler(this));
         playing = new Playing();
         scenesManager = new ScenesManager(this);
         controlPanel = new ControlPanel(this);
 
-        addKeyListener(new KeyHandler(playing));
+        gameArea.addKeyListener(new KeyHandler(playing));
 
         add(gameArea, BorderLayout.CENTER);
         add(controlPanel, BorderLayout.EAST);
@@ -87,6 +85,7 @@ public class GamePanel extends JPanel implements Runnable {
                             case PLAYING -> {
                                 playing.updateGame(TIME_STEP);
                                 controlPanel.updateHealthLabel();
+                                controlPanel.updateScore();
                             }
                         }
                     } finally {
@@ -95,25 +94,6 @@ public class GamePanel extends JPanel implements Runnable {
                 }
                 try {
                     Thread.sleep((int) (TIME_STEP * 1000));
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
-
-        // Thread manage sound
-        new Thread(() -> {
-            while (true) {
-                if (isRunning && !controlPanel.isStopped() && soundManager.isSoundOn()) {
-                    lock.lock();
-                    try {
-                        soundManager.playBackground();
-                    } finally {
-                        lock.unlock();
-                    }
-                }
-                try {
-                    Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -187,11 +167,22 @@ public class GamePanel extends JPanel implements Runnable {
         }
     }
 
+    public void replayGame() {
+        lock.lock();
+        try {
+            playing.replayGame();
+            isRunning = true;
+            System.out.println("Game replayed");
+        } finally {
+            lock.unlock();
+        }
+    }
+
     public Playing getPlaying() {
         return playing;
     }
 
-    public SoundManager getSoundManager() {
-        return soundManager;
+    public ControlPanel getControlPanel() {
+        return controlPanel;
     }
 }

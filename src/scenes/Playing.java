@@ -25,6 +25,7 @@ import manager.AlliesManager;
 import manager.EnemiesManager;
 import manager.MoveManager;
 import static com.sun.java.accessibility.util.AWTEventMonitor.addKeyListener;
+
 public class Playing {
     private boolean isActive = false;
 
@@ -63,7 +64,6 @@ public class Playing {
 
     public Playing() {
         initGenerate();
-        startGame();
     }
 
     public void startGame() {
@@ -91,6 +91,50 @@ public class Playing {
         if (allySpawnTimer != null) {
             allySpawnTimer.stop();
         }
+    }
+
+    public void replayGame() {
+        System.out.println("replay 1.1");
+        pauseGame();
+        System.out.println("replay 1.2");
+        isActive = false;
+        bullets.clear();
+        System.out.println("replay 1.3");
+        targetPosition = null;
+        countBoomer = 0;
+        countSlower = 0;
+        countBreaker = 0;
+        countSniper = 0;
+        countBrown = 0;
+        countOrange = 0;
+        countPurple = 0;
+        NoOfAlliesCurrent = 0;
+        MaxLevelOfBlue = 1;
+        brownAllies = null;
+        orangeAllies = null;
+        purpleAllies = null;
+        System.out.println("replay 1.4");
+        initGenerate();
+        System.out.println("replay 1.5");
+        startGame();
+        System.out.println("replay 1.6");
+    }
+
+    public void initGenerate() {
+        ROWS = GamePanel.ROWS;
+        COLS = GamePanel.COLS;
+        TILE_SIZE = GamePanel.TILE_SIZE;
+        player = new Player(10, 10, this);
+        barrier = new Barrier();
+        playerManager = new MoveManager(player);
+        enemiesManager = new EnemiesManager();
+        alliesManager = new AlliesManager();
+        Random random = new Random();
+        randomColor = new Color(random.nextFloat(), random.nextFloat(), random.nextFloat());
+        alliesManager.clear();
+        alliesMoveManager.clear();
+        enemiesManager.clear();
+        barrier.generateObstacles(player.getPosition());
     }
 
     private void SpawnEnemies() {
@@ -357,26 +401,6 @@ public class Playing {
             }
         }
     }
-    
-
-    public void initGenerate() {
-        ROWS = GamePanel.ROWS;
-        COLS = GamePanel.COLS;
-        TILE_SIZE = GamePanel.TILE_SIZE;
-        player = new Player(10, 10, this);
-        // turret = new Turret(1, 1, bullets);
-        barrier = new Barrier();
-        playerManager = new MoveManager(player);
-        // playerManager.addStationNaryObject(new Point(turret.getX(), turret.getY()));
-        enemiesManager = new EnemiesManager();
-        alliesManager = new AlliesManager();
-        Random random = new Random();
-        randomColor = new Color(random.nextFloat(), random.nextFloat(), random.nextFloat());
-        alliesManager.clear();
-        alliesMoveManager.clear();
-        enemiesManager.clear();
-        barrier.generateObstacles(player.getPosition());
-    }
 
     private void avoidOverlapping() {
         List<MoveManager> managers = new ArrayList<>();
@@ -440,12 +464,6 @@ public class Playing {
             Allies ally = newList.get(i);
             ally.draw(g, allyPixel.x, allyPixel.y);
         }
-//        turret.draw(g);
-//        for (Bullet bullet : bullets) {
-//            bullet.draw(g);
-//        }
-        g.setColor(Color.RED);
-        g.drawString("HP: " + player.getPlayerHealth(), 10, 20);
     }
 
     public void updateGame(float dT) {

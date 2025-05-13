@@ -11,28 +11,27 @@ public class SoundManager {
 
     public SoundManager() {
         try {
-           
+            // Load background music
             URL backgroundUrl = getClass().getClassLoader().getResource("resources/gamemusic.wav");
-
             if (backgroundUrl == null) {
-                backgroundUrl = getClass().getClassLoader().getResource("resources/gamemusic.wav");
+                throw new Exception("Background music file not found: resources/gamemusic.wav");
             }
             AudioInputStream backgroundStream = AudioSystem.getAudioInputStream(backgroundUrl);
             backgroundClip = AudioSystem.getClip();
             backgroundClip.open(backgroundStream);
-            backgroundClip.loop(Clip.LOOP_CONTINUOUSLY); 
+            backgroundClip.loop(Clip.LOOP_CONTINUOUSLY);
 
-
-            URL effectUrl = getClass().getResource("/resources/click.wav");
+            // Load sound effect
+            URL effectUrl = getClass().getClassLoader().getResource("resources/click.wav");
             if (effectUrl == null) {
-                effectUrl = new File("click.wav").toURI().toURL();
+                effectUrl = new File("resources/click.wav").toURI().toURL();
             }
             AudioInputStream effectStream = AudioSystem.getAudioInputStream(effectUrl);
             effectClip = AudioSystem.getClip();
             effectClip.open(effectStream);
         } catch (Exception e) {
             e.printStackTrace();
-            System.out.println("Sound files not found. Please add background.wav and click.wav to resources folder or project directory.");
+            System.out.println("Sound files not found. Ensure gamemusic.wav and click.wav are in the resources folder.");
         }
     }
 
@@ -47,14 +46,14 @@ public class SoundManager {
 
     public void playEffect() {
         if (soundOn && effectClip != null) {
-            effectClip.setFramePosition(0); 
+            effectClip.setFramePosition(0);
             effectClip.start();
         }
     }
 
     public void playBackground() {
         if (soundOn && backgroundClip != null && !backgroundClip.isRunning()) {
-            backgroundClip.setFramePosition(0); 
+            backgroundClip.setFramePosition(0);
             backgroundClip.start();
         }
     }
