@@ -12,16 +12,6 @@ public class ScenesManager {
 	}
 
 	public void render(Graphics g) {
-		switch (GameStates.gameStates) {
-			case MENU:
-				gamePanel.getMenu().draw(g);
-				break;
-			case PLAYING:
-				gamePanel.getPlaying().draw(g);
-				break;
-			case SETTINGS:
-				gamePanel.getSetting().draw(g);
-				break;
-		}
+		gamePanel.getPlaying().draw(g);
 	}
 }

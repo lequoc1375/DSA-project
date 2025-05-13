@@ -7,7 +7,7 @@ import scenes.Playing;
 
 public class ControlPanel extends JPanel {
     private GamePanel gamePanel;
-    private JButton stopButton, resumeButton, menuButton;
+    private JButton stopButton, resumeButton;
     private JLabel healthLabel; // New JLabel for health
     private boolean isStopped = false;
 
@@ -23,7 +23,6 @@ public class ControlPanel extends JPanel {
     private void initComponents() {
         stopButton = new JButton("Stop");
         resumeButton = new JButton("Resume");
-        menuButton = new JButton("Back to menu");
 
         // Initialize health label
         healthLabel = new JLabel("HP: 0");
@@ -34,21 +33,17 @@ public class ControlPanel extends JPanel {
         // Set positions and sizes for buttons
         stopButton.setBounds(10, 10, 180, 30);
         resumeButton.setBounds(10, 10, 180, 30);
-        menuButton.setBounds(10, 50, 180, 30);
 
         // Hide Resume and Menu initially
         resumeButton.setVisible(false);
-        menuButton.setVisible(false);
 
         // Add event listeners
         stopButton.addActionListener(e -> toggleStop());
         resumeButton.addActionListener(e -> resumeGame());
-        menuButton.addActionListener(e -> backToMenu());
 
         // Add components to panel
         add(stopButton);
         add(resumeButton);
-        add(menuButton);
         add(healthLabel); // Add health label
     }
 
@@ -56,7 +51,6 @@ public class ControlPanel extends JPanel {
         isStopped = true;
         stopButton.setVisible(false);
         resumeButton.setVisible(true);
-        menuButton.setVisible(true);
         gamePanel.stopGame();
         updateHealthLabel(); // Update health when stopping
     }
@@ -65,18 +59,8 @@ public class ControlPanel extends JPanel {
         isStopped = false;
         stopButton.setVisible(true);
         resumeButton.setVisible(false);
-        menuButton.setVisible(false);
         gamePanel.resumeGame();
         updateHealthLabel(); // Update health when resuming
-    }
-
-    private void backToMenu() {
-        isStopped = true;
-        stopButton.setVisible(true);
-        resumeButton.setVisible(false);
-        menuButton.setVisible(false);
-        gamePanel.backToMenu();
-        updateHealthLabel(); // Update health when returning to menu
     }
 
     // Method to update the health label

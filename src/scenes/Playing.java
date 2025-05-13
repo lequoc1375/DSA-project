@@ -24,7 +24,7 @@ import main.GamePanel;
 import manager.AlliesManager;
 import manager.EnemiesManager;
 import manager.MoveManager;
-
+import static com.sun.java.accessibility.util.AWTEventMonitor.addKeyListener;
 public class Playing {
     private boolean isActive = false;
 
@@ -63,6 +63,7 @@ public class Playing {
 
     public Playing() {
         initGenerate();
+        startGame();
     }
 
     public void startGame() {
