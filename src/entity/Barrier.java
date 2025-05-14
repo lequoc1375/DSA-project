@@ -29,25 +29,27 @@ public class Barrier {
         Set<Point> usedPositions = new HashSet<>();
 
         int placedObstacles = 0;
-        while (placedObstacles < totalObstacles) {
 
+        System.out.println("1.4.4.1");
+        while (placedObstacles < totalObstacles) {
+                                //500
             int x = rand.nextInt(COLS);
             int y = rand.nextInt(ROWS);
             Point startPoint = new Point(x, y);
-
+            System.out.println("1.4.4.2");
             if (!start.equals(startPoint) &&
                     costField[y][x] != 1000) {
-
+                        System.out.println("1.4.4.3");
                 int clusterSize = 2 + rand.nextInt(4);
                 if (placedObstacles + clusterSize > totalObstacles) {
                     clusterSize = totalObstacles - placedObstacles;
                 }
-
+                System.out.println("1.4.4.4");
                 if (clusterSize >= 2) {
                     List<Point> cluster = new ArrayList<>();
                     cluster.add(startPoint);
                     usedPositions.add(startPoint);
-
+                    System.out.println("1.4.4.5");
                     int attempts = 0;
                     while (cluster.size() < clusterSize && attempts < 10) {
                         Point current = cluster.get(rand.nextInt(cluster.size()));
@@ -64,7 +66,7 @@ public class Barrier {
                         }
                         attempts++;
                     }
-
+                    System.out.println("1.4.4.6");
                     if (cluster.size() >= 2) {
                         for (Point p : cluster) {
                             costField[p.y][p.x] = 1000;
@@ -74,6 +76,7 @@ public class Barrier {
                 }
             }
         }
+        System.out.println("1.4.4.7");
     }
 
     private boolean isValidPosition(int x, int y) {

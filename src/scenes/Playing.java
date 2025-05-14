@@ -117,7 +117,6 @@ public class Playing {
         System.out.println("replay 1.4");
         initGenerate();
         System.out.println("replay 1.5");
-        startGame();
         System.out.println("replay 1.6");
     }
 
@@ -125,17 +124,22 @@ public class Playing {
         ROWS = GamePanel.ROWS;
         COLS = GamePanel.COLS;
         TILE_SIZE = GamePanel.TILE_SIZE;
+        System.out.println("1.4.1");
         player = new Player(10, 10, this);
+        System.out.println("1.4.2");
         barrier = new Barrier();
         playerManager = new MoveManager(player);
         enemiesManager = new EnemiesManager();
         alliesManager = new AlliesManager();
         Random random = new Random();
         randomColor = new Color(random.nextFloat(), random.nextFloat(), random.nextFloat());
+        System.out.println("1.4.3");
         alliesManager.clear();
         alliesMoveManager.clear();
         enemiesManager.clear();
+        System.out.println("1.4.4");
         barrier.generateObstacles(player.getPosition());
+        System.out.println("1.4.5");
     }
 
     private void SpawnEnemies() {
@@ -145,25 +149,25 @@ public class Playing {
         switch (r.nextInt(4) + 1) {
             case 1:
                 if (countBreaker < 3) {
-                    enemiesManager.add(new EMPDisabler(x, y, 100, 2500, playerManager, () -> alliesManager.getAlliesList(), player,() -> alliesMoveManager));
+                    enemiesManager.add(new EMPDisabler(x, y, 4000, 2500, playerManager, () -> alliesManager.getAlliesList(), player,() -> alliesMoveManager));
                     countBreaker++;
                 }
                 break;
             case 2:
                 if (countBoomer < 3) {
-                    enemiesManager.add(new Boomer(x, y, 75, 20000, player, alliesManager));
+                    enemiesManager.add(new Boomer(x, y, 3000, 20000, player, alliesManager));
                     countBoomer++;
                 }
                 break;
             case 3:
                 if (countSlower < 1) {
-                    enemiesManager.add(new Slower(x, y, 100, 5000, player)); 
+                    enemiesManager.add(new Slower(x, y, 1250, 5000, player)); 
                     countSlower++;
                 }
                 break;
             case 4:
                 if (countSniper < 3) {
-                    enemiesManager.add(new Sniper(x, y, 100, 7500, playerManager, player)); // Sniper
+                    enemiesManager.add(new Sniper(x, y, 1500, 7500, playerManager, player)); // Sniper
                     countSniper++;
                 }
                 break;
