@@ -17,6 +17,7 @@ public class GamePanel extends JPanel implements Runnable {
     public static final int TILE_SIZE = 16;
     private static final float TIME_STEP = 0.01887f;
     private ScenesManager scenesManager;
+    private SoundManager soundManager;
     private Playing playing;
     private ControlPanel controlPanel;
     private ReentrantLock lock = new ReentrantLock();
@@ -52,7 +53,8 @@ public class GamePanel extends JPanel implements Runnable {
         gameArea.addMouseMotionListener(new MouseHandler(this));
         playing = new Playing();
         scenesManager = new ScenesManager(this);
-        controlPanel = new ControlPanel(this);
+        soundManager = new SoundManager();
+        controlPanel = new ControlPanel(this, soundManager);
 
         gameArea.addKeyListener(new KeyHandler(playing));
 
@@ -184,5 +186,9 @@ public class GamePanel extends JPanel implements Runnable {
 
     public ControlPanel getControlPanel() {
         return controlPanel;
+    }
+
+    public JPanel getGameArea() {
+        return gameArea;
     }
 }

@@ -10,7 +10,7 @@ import scenes.Playing;
 public class ControlPanel extends JPanel {
     private GamePanel gamePanel;
     private SoundManager soundManager;
-    private JButton playButton, stopButton, resumeButton, replayButton;
+    private JButton playButton, stopButton, resumeButton, replayButton, muteButton;
     private JLabel healthLabel;
     private JLabel currentScoreLabel;
     private JLabel highestScoreTitleLabel, highestScoreValueLabel; 
@@ -24,8 +24,9 @@ public class ControlPanel extends JPanel {
     private int highestScore;
     private static final String SCORE_FILE = "highscore.txt";
 
-    public ControlPanel(GamePanel gamePanel) {
+    public ControlPanel(GamePanel gamePanel, SoundManager soundManager) {
         this.gamePanel = gamePanel;
+        this.soundManager = soundManager;
         setPreferredSize(new Dimension(200, 800));
         setBackground(Color.LIGHT_GRAY);
         setLayout(null);
@@ -35,12 +36,11 @@ public class ControlPanel extends JPanel {
     }
 
     private void initComponents() {
-        soundManager = new SoundManager();
-
         playButton = new JButton("Play");
         stopButton = new JButton("Stop");
         resumeButton = new JButton("Resume");
         replayButton = new JButton("Replay");
+        muteButton = new JButton("Mute");
 
         // Initialize high score label
         highestScoreTitleLabel = new JLabel("Highest Score");
@@ -55,39 +55,54 @@ public class ControlPanel extends JPanel {
         highestScoreValueLabel.setBounds(0, 70, 200, 30);
         highestScoreValueLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
-        // Initialize health label
         healthLabel = new JLabel("HP: 1");
         healthLabel.setFont(new Font("Arial", Font.BOLD, 20));
         healthLabel.setForeground(Color.RED);
         healthLabel.setBounds(10, 200, 180, 30);
 
-        // Initialize current score label
         currentScoreLabel = new JLabel("Score: 0");
         currentScoreLabel.setFont(new Font("Arial", Font.BOLD, 20));
         currentScoreLabel.setForeground(Color.BLACK);
         currentScoreLabel.setBounds(10, 150, 180, 30);
 
-        // Set positions and sizes for buttons
         playButton.setBounds(10, 250, 180, 50);
         stopButton.setBounds(10, 250, 180, 50);
         resumeButton.setBounds(10, 250, 180, 50);
         replayButton.setBounds(10, 310, 180, 50);
+        muteButton.setBounds(10, 500, 180, 50);
 
-        // Set initial visibility
         playButton.setVisible(true);
         stopButton.setVisible(false);
         resumeButton.setVisible(false);
         replayButton.setVisible(false);
-        // Add event listeners
-        playButton.addActionListener(e -> startGame());
-        stopButton.addActionListener(e -> toggleStop());
-        resumeButton.addActionListener(e -> resumeGame());
-        replayButton.addActionListener(e -> replayGame());
+        muteButton.setVisible(true);
+
+        playButton.addActionListener(e -> {
+            startGame();
+            gamePanel.getGameArea().requestFocusInWindow();
+        });
+        stopButton.addActionListener(e -> {
+            toggleStop();
+            gamePanel.getGameArea().requestFocusInWindow();    
+        });
+        resumeButton.addActionListener(e -> {
+            resumeGame();
+            gamePanel.getGameArea().requestFocusInWindow();
+        });
+        replayButton.addActionListener(e -> {
+            replayGame();
+            gamePanel.getGameArea().requestFocusInWindow();
+        });
+        muteButton.addActionListener(e -> {
+            toggleMute();
+            gamePanel.getGameArea().requestFocusInWindow();
+        });
 
         add(playButton);
         add(stopButton);
         add(resumeButton);
         add(replayButton);
+        add(muteButton);
         add(healthLabel);
         add(currentScoreLabel);
         add(highestScoreTitleLabel);
@@ -116,7 +131,7 @@ public class ControlPanel extends JPanel {
         replayButton.setVisible(true);
         gamePanel.stopGame();
         updateHealthLabel();
-        pausedTime = System.currentTimeMillis(); // Ghi lại thời gian tạm dừng
+        pausedTime = System.currentTimeMillis(); 
         updateScore();
     }
 
@@ -143,6 +158,16 @@ public class ControlPanel extends JPanel {
         System.out.println("replay 2");
         updateHealthLabel();
         System.out.println("replay 3");
+    }
+
+    public void toggleMute() {
+        isMuted = !isMuted;
+        muteButton.setText(isMuted ? "Unmute" : "Mute");
+        if (isMuted) {
+            soundManager.pauseSound();
+        } else {
+            soundManager.resumeSound();
+        }
     }
 
     public void updateHealthLabel() {
