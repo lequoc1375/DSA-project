@@ -49,8 +49,8 @@ public class GamePanel extends JPanel implements Runnable {
         };
         gameArea.setFocusable(true);
         gameArea.requestFocusInWindow();
-        gameArea.addMouseListener(new MouseHandler(this));
-        gameArea.addMouseMotionListener(new MouseHandler(this));
+        addMouseListener(new MouseHandler(this));
+        addMouseMotionListener(new MouseHandler(this));
         playing = new Playing();
         scenesManager = new ScenesManager(this);
         soundManager = new SoundManager();

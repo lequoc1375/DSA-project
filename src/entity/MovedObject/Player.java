@@ -11,15 +11,14 @@ public class Player implements ObjectCanMove {
     private double health;
     public static float speed = 120;
     private boolean isSlowed = false;
-    private boolean  skillActive = true;
+    private boolean skillActive = true;
     private Rectangle bound;
     private BrownAllies brownAllies;
 
     private AlliesManager alliesManager;
-    private boolean shieldActive = false;
+
     private boolean isDead = false;
     private Playing playing;
-    
     private int playerHealth = 1;
 
     public Player(int x, int y, Playing playing) {
@@ -38,10 +37,21 @@ public class Player implements ObjectCanMove {
         this.position = newPosition;
     }
 
-    public int getX() { return position.x; }
-    public int getY() { return position.y; }
-    public float getSpeed() { return speed; }
-    public void setSpeed(float newSpeed) { this.speed = newSpeed; }
+    public int getX() {
+        return position.x;
+    }
+
+    public int getY() {
+        return position.y;
+    }
+
+    public float getSpeed() {
+        return speed;
+    }
+
+    public void setSpeed(float newSpeed) {
+        this.speed = newSpeed;
+    }
 
     public void setEmpDisabled(boolean disabled) {
         this.skillActive = disabled;
@@ -60,8 +70,9 @@ public class Player implements ObjectCanMove {
     public EMPDisabler getEmpSource() {
         return empSource;
     }
+
     public void playerIsHit() {
-        if (shieldActive) {
+        if (playing.getBrownAllies() != null && playing.getBrownAllies().isShieldActive()) {
             breakShield();
 
         } else if (playerHealth > 1) {
@@ -73,7 +84,7 @@ public class Player implements ObjectCanMove {
     }
 
     private void breakShield() {
-        shieldActive = false;
+        playing.getBrownAllies().deactivateShield();
         System.out.println("Shield is broken!");
     }
 
@@ -81,7 +92,6 @@ public class Player implements ObjectCanMove {
         isDead = true;
         System.out.println("Player die");
     }
-
 
     public void setBrownAllies(BrownAllies brownAllies) {
         this.brownAllies = brownAllies;

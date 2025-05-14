@@ -70,7 +70,7 @@ public class BrownAllies extends Allies {
         }
         if (!isCooldown && !isActive) {
             isActive = true;
-            shieldDurationTimer = new Timer(shieldDuration, (ActionEvent e) -> deactivateShield());
+            shieldDurationTimer = new Timer(shieldDuration*10, (ActionEvent e) -> deactivateShield());
             shieldDurationTimer.setRepeats(false);
             shieldDurationTimer.start();
         } else if (isCooldown) {
@@ -80,7 +80,7 @@ public class BrownAllies extends Allies {
         }
     }
 
-    private void deactivateShield() {
+    public void deactivateShield() {
         isActive = false;
         startCooldown();
     }
