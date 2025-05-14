@@ -88,6 +88,7 @@ public class GamePanel extends JPanel implements Runnable {
                                 playing.updateGame(TIME_STEP);
                                 controlPanel.updateHealthLabel();
                                 controlPanel.updateScore();
+                                controlPanel.checkPlayerHealth();
                             }
                         }
                     } finally {

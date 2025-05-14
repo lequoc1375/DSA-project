@@ -80,7 +80,6 @@ public class Player implements ObjectCanMove {
     private void die() {
         isDead = true;
         System.out.println("Player die");
-        System.exit(0);
     }
 
 

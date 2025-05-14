@@ -35,6 +35,7 @@ public class Playing {
     private AlliesManager alliesManager;
     private MoveManager playerManager;
     private Barrier barrier;
+    private GamePanel gamePanel;
     // private Turret turret;
     private Player player;
     private int ROWS;
@@ -184,9 +185,7 @@ public class Playing {
         for (Enemy dead : toRemove) {
             enemiesManager.remove(dead);
         }
-    }
-    
-    
+    }    
 
     private void SpawnAllies() {
         if (alliesManager.getAlliesList().size() >= noOfAllies) {
@@ -219,10 +218,8 @@ public class Playing {
     private Allies spawnWeightedAlly(int spawnX, int spawnY) {
         List<WeightedAlly> weightedAllies = new ArrayList<>();
     
-        // Always allow Blue
         weightedAllies.add(new WeightedAlly("BlueAllies", 10));
     
-        // Add only if not spawned yet
         if (countBrown < 1) {
             weightedAllies.add(new WeightedAlly("BrownAllies", 10));
         }
@@ -482,9 +479,6 @@ public class Playing {
         }
 
         player.setAlliesManager(alliesManager);
-        // System.out.println(countBrown);
-        // System.out.println(countOrange);
-        // System.out.println(countPurple);
 
         removeDeadEnemies();
     }
