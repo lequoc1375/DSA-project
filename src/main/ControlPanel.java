@@ -25,6 +25,7 @@ public class ControlPanel extends JPanel {
     private int currentScore; 
     private int highestScore;
     private int lastScore;
+    private Image backgroundImage;
     private static final String SCORE_FILE = "highestScore.txt";
     private static final String LAST_SCORE_FILE = "lastScore.txt";
 
@@ -43,16 +44,19 @@ public class ControlPanel extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        // Gradient nền
-        Graphics2D g2d = (Graphics2D) g;
-        Color color1 = new Color(10, 10, 30);
-        Color color2 = new Color(30, 60, 90);
-        GradientPaint gp = new GradientPaint(0, 0, color1, 0, getHeight(), color2);
-        g2d.setPaint(gp);
-        g2d.fillRect(0, 0, getWidth(), getHeight());
+        if (backgroundImage != null) {
+            g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
+        }
     }
 
     private void initComponents() {
+        try {
+            backgroundImage = new ImageIcon(getClass().getResource("/resources/ControlPanelBackground.png")).getImage();
+        } catch (Exception e) {
+            System.out.println("Cannot load the image: " + e.getMessage());
+        }
+
+
         playButton = createStyledButton("PLAY");
         stopButton = createStyledButton("STOP");
         resumeButton = createStyledButton("RESUME");
@@ -63,47 +67,47 @@ public class ControlPanel extends JPanel {
         highestScoreTitleLabel = new JLabel("Highest Score");
         highestScoreTitleLabel.setFont(new Font("Segoe UI", Font.BOLD, 22));
         highestScoreTitleLabel.setForeground(new Color(248, 200, 102));
-        highestScoreTitleLabel.setBounds(0, 20, 200, 30);
+        highestScoreTitleLabel.setBounds(0, 110, 200, 30);
         highestScoreTitleLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
         // Highest Score Value
         highestScoreValueLabel = new JLabel("" + highestScore);
         highestScoreValueLabel.setFont(new Font("Segoe UI", Font.BOLD, 24));
         highestScoreValueLabel.setForeground(new Color(255, 252, 242));
-        highestScoreValueLabel.setBounds(0, 60, 200, 30);
+        highestScoreValueLabel.setBounds(0, 140, 200, 30);
         highestScoreValueLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
         // Last Score Title
         lastScoreTitleLabel = new JLabel("Last Score");
         lastScoreTitleLabel.setFont(new Font("Segoe UI", Font.BOLD, 22));
         lastScoreTitleLabel.setForeground(new Color(101, 174, 174));
-        lastScoreTitleLabel.setBounds(0, 110, 200, 30);
+        lastScoreTitleLabel.setBounds(0, 180, 200, 30);
         lastScoreTitleLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
         // Last Score Value
         lastScoreValueLabel = new JLabel("" + lastScore);
         lastScoreValueLabel.setFont(new Font("Segoe UI", Font.BOLD, 24));
         lastScoreValueLabel.setForeground(new Color(255, 252, 242));
-        lastScoreValueLabel.setBounds(0, 150, 200, 30);
+        lastScoreValueLabel.setBounds(0, 210, 200, 30);
         lastScoreValueLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
         // Current Score
         currentScoreLabel = new JLabel("Score: 0");
         currentScoreLabel.setFont(new Font("Segoe UI", Font.BOLD, 20));
         currentScoreLabel.setForeground(new Color(230, 230, 230));
-        currentScoreLabel.setBounds(10, 200, 180, 30);
+        currentScoreLabel.setBounds(10, 260, 180, 30);
 
         // Health Label
         healthLabel = new JLabel("HP: 1");
         healthLabel.setFont(new Font("Segoe UI", Font.BOLD, 20));
         healthLabel.setForeground(new Color(200, 50, 50));
-        healthLabel.setBounds(10, 240, 180, 30);
+        healthLabel.setBounds(10, 290, 180, 30);
 
         // Buttons
-        playButton.setBounds(10, 300, 180, 50);
-        stopButton.setBounds(10, 300, 180, 50);
-        resumeButton.setBounds(10, 300, 180, 50);
-        replayButton.setBounds(10, 360, 180, 50);
+        playButton.setBounds(10, 330, 180, 50);
+        stopButton.setBounds(10, 330, 180, 50);
+        resumeButton.setBounds(10, 330, 180, 50);
+        replayButton.setBounds(10, 390, 180, 50);
         muteButton.setBounds(10, 550, 180, 50);
 
         playButton.setVisible(true);
@@ -325,7 +329,6 @@ public class ControlPanel extends JPanel {
                 g2.setColor(new Color(0, 0, 0, 50));
                 g2.fillRoundRect(4, 4, getWidth() - 8, getHeight() - 8, 20, 20);
 
-                // Gradient nền dựa trên trạng thái
                 GradientPaint gp;
                 if (isPressed) {
                     gp = new GradientPaint(0, 0, new Color(50, 100, 150), 
