@@ -42,7 +42,7 @@ public class Playing {
     private int COLS;
     private int TILE_SIZE;
     private Point targetPosition = null;
-    private int noOfAllies = 50;
+    private int noOfAllies = 50000;
     private Color randomColor;
     private int countBoomer = 0;
     private int countSlower = 0;
@@ -76,7 +76,7 @@ public class Playing {
         });
         enemySpawnTimer.start();
 
-        allySpawnTimer = new Timer(15000, e -> {
+        allySpawnTimer = new Timer(1000, e -> {
             if (isActive) {
                 SpawnAllies();
             }
@@ -447,7 +447,7 @@ public class Playing {
         int[][] costField = Barrier.getCostField();
         for (int r = 0; r < ROWS; r++) {
             for (int c = 0; c < COLS; c++) {
-                g.setColor(costField[r][c] == 1000 ? Color.BLACK : Color.WHITE);
+                g.setColor(costField[r][c] == 1000 ? Color.BLACK : new Color(220, 220, 220));
                 g.fillRect(c * TILE_SIZE, r * TILE_SIZE, TILE_SIZE, TILE_SIZE);
             }
         }
@@ -551,11 +551,19 @@ public class Playing {
     }
 
     private void assignTargetPositions(Point center) {
-            List<Point> positions = calculateFormation(center);
-            playerManager.setTarget(positions.get(0));
-            for (int i = 0; i < alliesMoveManager.size(); i++) {
-                alliesMoveManager.get(i).setTarget(positions.get(i + 1));
-            }
+        List<Point> positions = calculateFormation(center);
+        if (positions.isEmpty()) {
+            System.out.println("Warning: No valid positions found for target assignment.");
+            return;
+        }
+
+        playerManager.setTarget(positions.get(0)); 
+        int availablePositions = positions.size() - 1;
+        int managerCount = alliesMoveManager.size();
+
+        for (int i = 0; i < Math.min(managerCount, availablePositions); i++) {
+            alliesMoveManager.get(i).setTarget(positions.get(i + 1));
+        }
     }
 
     public BrownAllies getBrownAllies() {

@@ -64,22 +64,22 @@ public  class Allies  implements ObjectCanMove{
     
         switch (this.getLevel()) {
             case 1:
-                g.setColor(new Color(180, 180, 180));
+                g.setColor(new Color(255, 255, 250));
                 break;
             case 2:
-                g.setColor(new Color(69, 203, 103));
+                g.setColor(new Color(50, 205, 50));
                 break;
             case 3:
-                g.setColor(new Color(51, 161, 247));
+                g.setColor(new Color(30, 144, 255));
                 break;
             case 4:
-                g.setColor(new Color(163, 67, 255));
+                g.setColor(new Color(147, 112, 219));
                 break;
             case 5:
-                g.setColor(new Color(253, 214, 54));
+                g.setColor(new Color(255, 215, 0));
                 break;
             case 6:
-                g.setColor(new Color(239, 34, 38));
+                g.setColor(new Color(220, 20, 60));
                 break;
         }
     

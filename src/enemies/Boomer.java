@@ -21,7 +21,7 @@ public class Boomer extends Enemy {
     private Player player;
 
     public Boomer(int x, int y, int health, float fireRate, Player player, AlliesManager alliesManager) {
-        super(x, y, health, fireRate, new Color(199, 21, 133));
+        super(x, y, health, fireRate, new Color(140, 140, 140));
         boomList = new ArrayList<>();
         pendingBooms = new ArrayList<>();
         this.player = player;
@@ -80,10 +80,19 @@ public class Boomer extends Enemy {
                 }
             }
 
+            if(health < 100) {
+                boom.triggerExplosion();
+            }
+
             if (boom.isExplosionOver()) {
                 iter.remove();
                 if (player.getPosition().equals(boomTile)) {
                     player.playerIsHit();
+                }
+                for(Allies ally : alliesManager.getAlliesQueue()) {
+                    if(ally.getPosition().equals(boomTile)) {
+                        player.playerIsHit();
+                    }
                 }
             }
         }

@@ -9,7 +9,7 @@ public class Boom {
     private Point point;
     private boolean exploded = false;
     private long explosionStartTime = 0;
-    private long explosionDuration = 1000; 
+    private long explosionDuration = 500; 
     private Timer timeExist;
 
     public Boom(Point point) {

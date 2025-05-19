@@ -25,7 +25,7 @@ public class Sniper extends Enemy {
     private Rectangle bulletRect;
     private Player playerObject;
     public Sniper(int x, int y, int health, float fireRate, MoveManager player, Player player1) {
-        super(x, y, health, fireRate, new Color(139, 0, 0));
+        super(x, y, health, fireRate, new Color(58, 78, 72));
         this.player = player;
         enemyBullets = new ArrayList<>();
         playerObject = player1;
@@ -133,10 +133,10 @@ public class Sniper extends Enemy {
             int targetX = player.getPixelPosition().x ;
             int targetY = player.getPixelPosition().y ;
 
-            GradientPaint gp = new GradientPaint(centerX, centerY, Color.RED, targetX, targetY, Color.ORANGE, true);
+            GradientPaint gp = new GradientPaint(centerX, centerY, new Color(58, 78, 72), targetX, targetY, Color.RED, true);
             g2d.setPaint(gp);
 
-            g2d.setStroke(new BasicStroke(6, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+            g2d.setStroke(new BasicStroke(4, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
             g2d.drawLine(centerX, centerY, targetX, targetY);
         }
 

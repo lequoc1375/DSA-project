@@ -96,7 +96,7 @@ public class BrownAllies extends Allies {
     public void draw(Graphics g, int x, int y) {
         super.draw(g, x, y);
         if (isActive) {
-            g.setColor(Color.BLUE);
+            g.setColor(new Color(0, 191, 255));
             Point p = player.getPixelPosition();
             int cx = p.x, cy = p.y, r = 20;
             g.drawOval(cx - r/2, cy - r/2, r, r);

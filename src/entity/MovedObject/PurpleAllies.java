@@ -78,7 +78,7 @@ public class PurpleAllies extends Allies {
         super.draw(g, x, y);
 
         if (isBlessing) {
-            g.setColor(Color.GREEN);
+            g.setColor(new Color(0, 255, 127));
             int playerCenterX = player.getPixelPosition().x;
             int playerCenterY = player.getPixelPosition().y;
             int radius = 16;

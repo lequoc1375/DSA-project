@@ -4,12 +4,14 @@ import controller.KeyHandler;
 import controller.MouseHandler;
 import java.awt.*;
 import java.awt.event.MouseEvent;
+import java.util.Arrays;
 import java.util.concurrent.locks.ReentrantLock;
 import javax.swing.*;
 import manager.ScenesManager;
 import manager.SoundManager;
 import scenes.GameStates;
 import scenes.Playing;
+import java.util.List;
 
 public class GamePanel extends JPanel implements Runnable {
     public static final int COLS = 50;
@@ -20,12 +22,21 @@ public class GamePanel extends JPanel implements Runnable {
     private SoundManager soundManager;
     private Playing playing;
     private ControlPanel controlPanel;
+    private GuidePanel guidePanel;
     private ReentrantLock lock = new ReentrantLock();
     private boolean isRunning = false;
+    private boolean isGuideVisible = false;
+    private boolean isStart = false;
     private JPanel gameArea;
+    private CardLayout cardLayout;
+    private JPanel cardPanel;
 
     public GamePanel() {
         setLayout(new BorderLayout());
+
+        // Initialize CardLayout for switching between gameArea and guidePanel
+        cardLayout = new CardLayout();
+        cardPanel = new JPanel(cardLayout);
 
         gameArea = new JPanel() {
             @Override
@@ -57,9 +68,20 @@ public class GamePanel extends JPanel implements Runnable {
         controlPanel = new ControlPanel(this, soundManager);
 
         gameArea.addKeyListener(new KeyHandler(playing));
+        
+        
+        // Initialize GuidePanel
+        guidePanel = new GuidePanel(this);
+        guidePanel.setVisible(true); // Ensure it's visible when shown
 
-        add(gameArea, BorderLayout.CENTER);
+        // Add gameArea and guidePanel to cardPanel
+        cardPanel.add(gameArea, "GameArea");
+        cardPanel.add(guidePanel, "GuidePanel");
+        
+        // Add cardPanel to CENTER and controlPanel to EAST
+        add(cardPanel, BorderLayout.CENTER);
         add(controlPanel, BorderLayout.EAST);
+
 
         setPreferredSize(new Dimension(COLS * TILE_SIZE + 200, ROWS * TILE_SIZE));
 
@@ -132,6 +154,8 @@ public class GamePanel extends JPanel implements Runnable {
             GameStates.SetGameState(GameStates.PLAYING);
             playing.startGame();
             isRunning = true;
+            isStart = true;
+            cardLayout.show(cardPanel, "GameArea"); // Ensure gameArea is visible
             System.out.println("Game started");
         } finally {
             lock.unlock();
@@ -175,9 +199,23 @@ public class GamePanel extends JPanel implements Runnable {
         try {
             playing.replayGame();
             isRunning = true;
+            cardLayout.show(cardPanel, "GameArea"); 
             System.out.println("Game replayed");
-        } finally {
+        } finally { 
             lock.unlock();
+        }
+    }
+
+    public void toggleGuide() {
+        isGuideVisible = !isGuideVisible;
+        if (isGuideVisible) {
+            stopGame();
+            cardLayout.show(cardPanel, "GuidePanel");
+        } else {
+            cardLayout.show(cardPanel, "GameArea"); 
+            if(isStart) {
+                resumeGame();
+            }
         }
     }
 
@@ -191,5 +229,9 @@ public class GamePanel extends JPanel implements Runnable {
 
     public JPanel getGameArea() {
         return gameArea;
+    }
+
+    public JPanel getGuidePanel() {
+        return guidePanel;
     }
 }

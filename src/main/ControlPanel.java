@@ -11,7 +11,7 @@ import scenes.Playing;
 public class ControlPanel extends JPanel {
     private GamePanel gamePanel;
     private SoundManager soundManager;
-    private JButton playButton, stopButton, resumeButton, replayButton, muteButton;
+    private JButton playButton, stopButton, resumeButton, replayButton, muteButton, howToPlayButton;
     private JLabel healthLabel;
     private JLabel currentScoreLabel;
     private JLabel highestScoreTitleLabel, highestScoreValueLabel; 
@@ -19,6 +19,7 @@ public class ControlPanel extends JPanel {
     private boolean isStopped = false;
     private boolean isStarted = false; 
     private boolean isMuted = false;
+    private boolean isGuideVisible = false; 
     private long startTime; 
     private long pausedTime; 
     private long totalPausedDuration;
@@ -47,6 +48,10 @@ public class ControlPanel extends JPanel {
         if (backgroundImage != null) {
             g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
         }
+
+        g.setColor(Color.WHITE);
+        g.drawLine(0, 0, 0, getHeight() - 1);                     
+        g.drawLine(getWidth() - 1, 0, getWidth() - 1, getHeight() - 1); 
     }
 
     private void initComponents() {
@@ -62,6 +67,7 @@ public class ControlPanel extends JPanel {
         resumeButton = createStyledButton("RESUME");
         replayButton = createStyledButton("REPLAY");
         muteButton = createStyledButton("MUTE");
+        howToPlayButton = createStyledButton("HOW TO PLAY");
 
         // Highest Score Title
         highestScoreTitleLabel = new JLabel("Highest Score");
@@ -109,12 +115,14 @@ public class ControlPanel extends JPanel {
         resumeButton.setBounds(10, 330, 180, 50);
         replayButton.setBounds(10, 390, 180, 50);
         muteButton.setBounds(10, 550, 180, 50);
+        howToPlayButton.setBounds(10, 610, 180, 50);
 
         playButton.setVisible(true);
         stopButton.setVisible(false);
         resumeButton.setVisible(false);
         replayButton.setVisible(false);
         muteButton.setVisible(true);
+        howToPlayButton.setVisible(true);
 
         playButton.addActionListener(e -> {
             startGame();
@@ -136,12 +144,16 @@ public class ControlPanel extends JPanel {
             toggleMute();
             gamePanel.getGameArea().requestFocusInWindow();
         });
+        howToPlayButton.addActionListener(e -> {
+            toggleGuide();
+        });
 
         add(playButton);
         add(stopButton);
         add(resumeButton);
         add(replayButton);
         add(muteButton);
+        add(howToPlayButton);
         add(healthLabel);
         add(currentScoreLabel);
         add(highestScoreTitleLabel);
@@ -183,7 +195,7 @@ public class ControlPanel extends JPanel {
         updateScore();
     }
 
-    private void resumeGame() {
+    public void resumeGame() {
         isStopped = false;
         stopButton.setVisible(true);
         resumeButton.setVisible(false);
@@ -215,6 +227,19 @@ public class ControlPanel extends JPanel {
             soundManager.pauseSound();
         } else {
             soundManager.resumeSound();
+        }
+    }
+
+    private void toggleGuide() {
+        isGuideVisible = !isGuideVisible;
+        howToPlayButton.setText(isGuideVisible ? "BACK TO GAME" : "HOW TO PLAY");
+        gamePanel.toggleGuide();
+        if (isGuideVisible) {
+            isStopped = true;
+            gamePanel.getGuidePanel().requestFocusInWindow();
+        } else {
+            isStopped = false;
+            gamePanel.getGameArea().requestFocusInWindow();
         }
     }
 
@@ -349,10 +374,9 @@ public class ControlPanel extends JPanel {
 
             @Override
             protected void paintBorder(Graphics g) {
-                // Tắt viền mặc định
+                
             }
 
-            // Cập nhật trạng thái hover và pressed
             {
                 addMouseListener(new java.awt.event.MouseAdapter() {
                     @Override

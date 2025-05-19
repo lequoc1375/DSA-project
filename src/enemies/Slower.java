@@ -15,7 +15,7 @@ public class Slower extends Enemy {
     private Player player;
     float originSpeed = Player.speed;
     public Slower(int x, int y, int health, float fireRate, Player player) {
-        super(x, y, health, fireRate, new Color(204, 153, 0));
+        super(x, y, health, fireRate, new Color(91, 78, 59));
         this.player = player;
     }
 

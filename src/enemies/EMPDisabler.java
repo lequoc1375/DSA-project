@@ -26,7 +26,7 @@ public class EMPDisabler extends Enemy {
     private int width = 8, height = 8;
 
     public EMPDisabler(int x, int y, int health, float fireRate, MoveManager player, Supplier<List<Allies>> alliesSupplier, Player player1, Supplier<List<MoveManager>> alliesManagerSupplier) {
-        super(x, y, health, fireRate, new Color(0, 191, 255));
+        super(x, y, health, fireRate, new Color(28, 59, 129));
         this.player = player;
         this.alliesSupplier = alliesSupplier;
         this.player1 = player1;
@@ -114,7 +114,7 @@ public class EMPDisabler extends Enemy {
         int centerY = y * 16 + height;
 
         if (empActive) {
-            g2d.setColor(Color.RED);
+            g2d.setColor(new Color(28, 59, 129));
             g2d.drawOval(centerX - empRadius, centerY - empRadius, empRadius * 2, empRadius * 2);
             drawLightningEffect(g2d, centerX, centerY, empRadius);
         }
@@ -122,7 +122,7 @@ public class EMPDisabler extends Enemy {
         if (player1.isEmpDisabled() && player1.getEmpSource() == this) {
             int playerCenterX = player.getPixelPosition().x;
             int playerCenterY = player.getPixelPosition().y;
-            g2d.setColor(Color.RED);
+            g2d.setColor(new Color(28, 59, 129));
             g2d.drawOval(playerCenterX - shieldRadius, playerCenterY - shieldRadius, shieldDiameter, shieldDiameter);
             drawLightningEffect(g2d, playerCenterX, playerCenterY, shieldRadius);
         }
@@ -138,7 +138,7 @@ public class EMPDisabler extends Enemy {
             if (ally.isEmpDisabled() && ally.getEmpSource() == this) {
                 int allyCenterX = allyMove.getPixelPosition().x;
                 int allyCenterY = allyMove.getPixelPosition().y;
-                g2d.setColor(Color.CYAN);
+                g2d.setColor(new Color(28, 59, 129));
                 g2d.drawOval(allyCenterX - shieldRadius, allyCenterY - shieldRadius, shieldDiameter, shieldDiameter);
                 drawLightningEffect(g2d, allyCenterX, allyCenterY, shieldRadius);
             }
