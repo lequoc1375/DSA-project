@@ -1,17 +1,15 @@
 package enemies;
 
-import entity.MovedObject.Player;
 import entity.Bullet;
-import manager.MoveManager;
-
-import javax.swing.*;
+import entity.MovedObject.Player;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import javax.swing.*;
 import static main.GamePanel.TILE_SIZE;
+import manager.MoveManager;
 
 public class Sniper extends Enemy {
     private MoveManager player;
@@ -50,7 +48,7 @@ public class Sniper extends Enemy {
         isAttacking = true;
 
 
-        attackTimer = new Timer(5000, (ActionEvent e) -> {
+        attackTimer = new Timer((int)fireRate, (ActionEvent e) -> {
             System.out.println("Timer triggered!");
             if (isPlayerWithinRange()) {
                 int startX = this.x ;

@@ -2,7 +2,6 @@ package enemies;
 
 import entity.MovedObject.Player;
 import entity.MovedObject.PurpleAllies;
-
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
@@ -37,7 +36,7 @@ public class Slower extends Enemy {
         effectTimer.setRepeats(false);
         effectTimer.start();
 
-        Timer cooldownTimer = new Timer(15000, (ActionEvent ev) -> {
+        Timer cooldownTimer = new Timer((int)fireRate, (ActionEvent ev) -> {
             isOnCooldown = false;
 
         });

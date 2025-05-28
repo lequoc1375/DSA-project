@@ -1,30 +1,25 @@
 package scenes;
 
-import controller.KeyHandler;
 import enemies.*;
 import entity.Barrier;
 import entity.Bullet;
 import entity.MovedObject.*;
-import entity.Turret;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 import java.util.Random;
 import java.util.Set;
-
 import javax.swing.*;
 import main.GamePanel;
 import manager.AlliesManager;
 import manager.EnemiesManager;
 import manager.MoveManager;
-import static com.sun.java.accessibility.util.AWTEventMonitor.addKeyListener;
 
 public class Playing {
     private boolean isActive = false;
@@ -149,25 +144,25 @@ public class Playing {
         switch (r.nextInt(4) + 1) {
             case 1:
                 if (countBreaker < 3) {
-                    enemiesManager.add(new EMPDisabler(x, y, 4000, 2500, playerManager, () -> alliesManager.getAlliesList(), player,() -> alliesMoveManager));
+                    enemiesManager.add(new EMPDisabler(x, y, 4000, 2000, playerManager, () -> alliesManager.getAlliesList(), player,() -> alliesMoveManager));
                     countBreaker++;
                 }
                 break;
             case 2:
                 if (countBoomer < 3) {
-                    enemiesManager.add(new Boomer(x, y, 3000, 20000, player, alliesManager));
+                    enemiesManager.add(new Boomer(x, y, 3000, 500, player, alliesManager));
                     countBoomer++;
                 }
                 break;
             case 3:
                 if (countSlower < 1) {
-                    enemiesManager.add(new Slower(x, y, 1250, 5000, player)); 
+                    enemiesManager.add(new Slower(x, y, 1250, 200, player)); 
                     countSlower++;
                 }
                 break;
             case 4:
                 if (countSniper < 3) {
-                    enemiesManager.add(new Sniper(x, y, 1500, 7500, playerManager, player)); // Sniper
+                    enemiesManager.add(new Sniper(x, y, 1500, 200, playerManager, player)); 
                     countSniper++;
                 }
                 break;
@@ -214,7 +209,10 @@ public class Playing {
         alliesMoveManager.add(new MoveManager(newAlly));
         NoOfAlliesCurrent ++;
         
-        player.setPlayerHealth(player.getPlayerHealth() + 1);
+        if (player.getPlayerHealth() < 20) {
+            player.setPlayerHealth(player.getPlayerHealth() + 1);
+        }
+        
 
         mergeIfPossible(newAlly);
     }

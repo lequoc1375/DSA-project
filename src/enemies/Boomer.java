@@ -4,14 +4,13 @@ import entity.Barrier;
 import entity.Boom;
 import entity.MovedObject.Allies;
 import entity.MovedObject.Player;
-import manager.AlliesManager;
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.*;
 import java.util.List;
 import javax.swing.Timer;
 import static main.GamePanel.*;
+import manager.AlliesManager;
 
 public class Boomer extends Enemy {
     private List<Boom> boomList;
@@ -30,7 +29,7 @@ public class Boomer extends Enemy {
 
     @Override
     public void attack() {
-        attackTimer = new Timer(5000, (ActionEvent e) -> {
+        attackTimer = new Timer((int)fireRate, (ActionEvent e) -> {
             Random random = new Random();
             int totalBombsPerTurn = 3;
 
