@@ -3,13 +3,11 @@ package manager;
 import entity.Barrier;
 import entity.MovedObject.ObjectCanMove;
 import entity.MovedObject.Player;
-import main.GamePanel;
-
 import java.awt.*;
 import java.awt.geom.Point2D;
-import java.util.List;
-import java.util.Queue;
 import java.util.*;
+import java.util.List;
+import main.GamePanel;
 
 public class MoveManager {
     private static final int ROWS = GamePanel.ROWS;
@@ -272,4 +270,10 @@ public class MoveManager {
         return new Rectangle(x, y, TILE_SIZE, TILE_SIZE);
     }
 
+    public Point[][] getFlowField() {
+        return flowField;
+    }
+
+    
+    
 }

@@ -6,7 +6,9 @@ import entity.Bullet;
 import entity.MovedObject.*;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -31,7 +33,6 @@ public class Playing {
     private MoveManager playerManager;
     private Barrier barrier;
     private GamePanel gamePanel;
-    // private Turret turret;
     private Player player;
     private int ROWS;
     private int COLS;
@@ -71,7 +72,7 @@ public class Playing {
         });
         enemySpawnTimer.start();
 
-        allySpawnTimer = new Timer(1000, e -> {
+        allySpawnTimer = new Timer(7000, e -> {
             if (isActive) {
                 SpawnAllies();
             }
@@ -442,6 +443,7 @@ public class Playing {
     }
 
     public void draw(Graphics g) {
+        Graphics2D g2 = (Graphics2D)g;
         int[][] costField = Barrier.getCostField();
         for (int r = 0; r < ROWS; r++) {
             for (int c = 0; c < COLS; c++) {
@@ -463,6 +465,7 @@ public class Playing {
             Allies ally = newList.get(i);
             ally.draw(g, allyPixel.x, allyPixel.y);
         }
+        drawFlowField(g2, playerManager);
     }
 
     public void updateGame(float dT) {
@@ -578,5 +581,55 @@ public class Playing {
 
     public Player getPlayer() {
         return player;
+    }
+
+    public void drawFlowField(Graphics2D g, MoveManager manager) {
+        final int rows = GamePanel.ROWS;
+        final int cols = GamePanel.COLS;
+        final int tileSize = 16;
+
+        Point[][] flow = manager.getFlowField();
+        Color oldColor = g.getColor();
+        g.setColor(new Color(0, 255, 0, 128));
+
+        for (int y = 0; y < rows; y++) {
+            for (int x = 0; x < cols; x++) {
+                Point next = flow[y][x];
+                if (next != null) {
+                    float cx = x * tileSize + tileSize / 2f;
+                    float cy = y * tileSize + tileSize / 2f;
+                    float nx = next.x * tileSize + tileSize / 2f;
+                    float ny = next.y * tileSize + tileSize / 2f;
+
+                    g.drawLine((int) cx, (int) cy, (int) nx, (int) ny);
+                    drawArrowHead(g, cx, cy, nx, ny);
+                }
+            }
+        }
+
+        g.setColor(oldColor);
+    }
+
+    private void drawArrowHead(Graphics2D g, float x1, float y1, float x2, float y2) {
+        double phi = Math.toRadians(20);
+        int barb = 8;
+
+        double dx = x2 - x1;
+        double dy = y2 - y1;
+        double theta = Math.atan2(dy, dx);
+
+        Path2D.Double path = new Path2D.Double();
+        path.moveTo(x2, y2);
+        path.lineTo(
+                x2 - barb * Math.cos(theta + phi),
+                y2 - barb * Math.sin(theta + phi)
+        );
+        path.lineTo(
+                x2 - barb * Math.cos(theta - phi),
+                y2 - barb * Math.sin(theta - phi)
+        );
+        path.closePath();
+
+        g.fill(path);
     }
 }
