@@ -1,9 +1,9 @@
 package main;
 
-import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.*;
 
 public class GuidePanel extends JPanel {
     private GamePanel gamePanel;
@@ -47,11 +47,10 @@ public class GuidePanel extends JPanel {
         nextButton.addActionListener(e -> showNextPage());
         buttonPanel.add(nextButton);
 
-        buttonPanel.setBounds(0, 600, GamePanel.COLS * GamePanel.TILE_SIZE, 60);
+        buttonPanel.setBounds(0, 700, GamePanel.COLS * GamePanel.TILE_SIZE, 60);
         add(buttonPanel);
         updateNavigationButtons();
 
-        // Request focus to support keyboard navigation
         setFocusable(true);
         addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
@@ -110,7 +109,6 @@ public class GuidePanel extends JPanel {
             Image img = pages.get(currentPageIndex);
             g2.drawImage(img, 0, 0, getWidth(), getHeight(), this);
         } else {
-            // Fallback content
             g2.setColor(Color.WHITE);
             g2.setFont(new Font("Segoe UI", Font.BOLD, 24));
             g2.drawString("Guide Not Available", getWidth() / 2 - 100, getHeight() / 2);

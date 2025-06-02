@@ -19,15 +19,15 @@ public class Button {
     public void draw(Graphics g) {
         Graphics2D g2d = (Graphics2D) g;
 
-        // Button background (change color if hovered)
-        g2d.setColor(hovered ? new Color(150, 150, 255) : Color.GRAY); // Light blue when hovered
+    
+        g2d.setColor(hovered ? new Color(150, 150, 255) : Color.GRAY); 
         g2d.fillRect(x, y, width, height);
 
-        // Button border
+
         g2d.setColor(Color.BLACK);
         g2d.drawRect(x, y, width, height);
 
-        // Button text
+
         g2d.setColor(Color.WHITE);
         g2d.setFont(new Font("Arial", Font.BOLD, 18));
 

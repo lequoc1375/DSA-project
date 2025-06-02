@@ -11,7 +11,6 @@ public class SoundManager {
 
     public SoundManager() {
         try {
-            // Load background music
             URL backgroundUrl = getClass().getClassLoader().getResource("resources/gamemusic.wav");
             if (backgroundUrl == null) {
                 throw new Exception("Background music file not found: resources/gamemusic.wav");
