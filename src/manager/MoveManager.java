@@ -60,30 +60,23 @@ public class MoveManager {
     }
 
     private void computeFlowField() {
-
         for (int r = 0; r < ROWS; r++) {
             for (int c = 0; c < COLS; c++) {
                 flowField[r][c] = null;
             }
         }
-
         int[][] distances = new int[ROWS][COLS];
         for (int[] row : distances)
             Arrays.fill(row, Integer.MAX_VALUE);
-
         Queue<Point> queue = new LinkedList<>();
         distances[targetPos.y][targetPos.x] = 0;
         queue.add(targetPos);
-
         int[][] directions = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}, {-1, -1}, {-1, 1}, {1, -1}, {1, 1}};
-
         while (!queue.isEmpty()) {
             Point current = queue.poll();
-
             for (int[] dir : directions) {
                 int nx = current.x + dir[0];
                 int ny = current.y + dir[1];
-
                 if (isValidPosition(nx, ny) && !Barrier.isObstacle(nx, ny)) {
                     int moveCost = (dir[0] != 0 && dir[1] != 0) ? 14 : 10;
                     int occupancyCost = objectCount.getOrDefault(new Point(nx, ny), 0) * 200;
@@ -104,7 +97,6 @@ public class MoveManager {
             isMoving = false;
             return;
         }
-
         Point nextGrid = flowField[currentGrid.y][currentGrid.x];
         if (nextGrid == null || !canMoveTo(nextGrid)) {
             stuckCounter++;
@@ -116,21 +108,15 @@ public class MoveManager {
         } else {
             stuckCounter = 0;
         }
-
-
         float targetPixelX = nextGrid.x * TILE_SIZE + TILE_SIZE / 2f;
         float targetPixelY = nextGrid.y * TILE_SIZE + TILE_SIZE / 2f;
-
         float dx = targetPixelX - pixelPos.x;
         float dy = targetPixelY - pixelPos.y;
         float distance = (float) Math.sqrt(dx * dx + dy * dy);
-
         if (distance < Player.speed * deltaTime) {
-
             float t = (Player.speed * deltaTime) / distance;
             pixelPos.x = pixelPos.x + dx * t;
             pixelPos.y = pixelPos.y + dy * t;
-
             updateObjectCount(currentGrid, -1);
             reservedPositions.remove(currentGrid);
             currentGrid = nextGrid;
@@ -140,10 +126,8 @@ public class MoveManager {
                 isMoving = false;
             }
         } else {
-
             float seekX = (dx / distance) * Player.speed;
             float seekY = (dy / distance) * Player.speed;
-
             Point2D.Float separationVector = new Point2D.Float(0, 0);
             float separationDistance = 2 * TILE_SIZE;
             for (MoveManager other : allManagers) {
@@ -159,27 +143,22 @@ public class MoveManager {
                     }
                 }
             }
-
             float sepMagnitude = (float) Math.sqrt(separationVector.x * separationVector.x + separationVector.y * separationVector.y);
             float sepX = 0, sepY = 0;
             if (sepMagnitude > 0) {
                 float separationSpeed = Player.speed * 0.3f;
                 if (sepMagnitude > 0) {
                     sepX = (separationVector.x / sepMagnitude) * Math.min(separationSpeed, sepMagnitude);
-
                     sepY = (separationVector.y / sepMagnitude) * Math.min(separationSpeed, sepMagnitude);
                 }
             }
-
             float velX = seekX + sepX;
             float velY = seekY + sepY;
-
             float velMagnitude = (float) Math.sqrt(velX * velX + velY * velY);
             if (velMagnitude > Player.speed) {
                 velX = (velX / velMagnitude) * Player.speed;
                 velY = (velY / velMagnitude) * Player.speed;
             }
-
             pixelPos.x += velX * deltaTime;
             pixelPos.y += velY * deltaTime;
         }

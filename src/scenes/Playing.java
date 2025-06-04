@@ -65,14 +65,14 @@ public class Playing {
 
     public void startGame() {
         isActive = true;
-        enemySpawnTimer = new Timer(5000, e -> {
+        enemySpawnTimer = new Timer(6500, e -> {
             if (isActive) {
                 SpawnEnemies();
             }
         });
         enemySpawnTimer.start();
 
-        allySpawnTimer = new Timer(7000, e -> {
+        allySpawnTimer = new Timer(7600, e -> {
             if (isActive) {
                 SpawnAllies();
             }
@@ -145,25 +145,25 @@ public class Playing {
         switch (r.nextInt(4) + 1) {
             case 1:
                 if (countBreaker < 3) {
-                    enemiesManager.add(new EMPDisabler(x, y, 4000, 2000, playerManager, () -> alliesManager.getAlliesList(), player,() -> alliesMoveManager));
+                    enemiesManager.add(new EMPDisabler(x, y, 350, 5000, playerManager, () -> alliesManager.getAlliesList(), player,() -> alliesMoveManager));
                     countBreaker++;
                 }
                 break;
             case 2:
                 if (countBoomer < 3) {
-                    enemiesManager.add(new Boomer(x, y, 3000, 500, player, alliesManager));
+                    enemiesManager.add(new Boomer(x, y, 250, 3900, player, alliesManager));
                     countBoomer++;
                 }
                 break;
             case 3:
                 if (countSlower < 1) {
-                    enemiesManager.add(new Slower(x, y, 1250, 200, player)); 
+                    enemiesManager.add(new Slower(x, y, 400, 7000, player));
                     countSlower++;
                 }
                 break;
             case 4:
                 if (countSniper < 3) {
-                    enemiesManager.add(new Sniper(x, y, 1500, 200, playerManager, player)); 
+                    enemiesManager.add(new Sniper(x, y, 200, 1500, playerManager, player));
                     countSniper++;
                 }
                 break;
@@ -235,17 +235,17 @@ public class Playing {
             weightedAllies.add(new WeightedAlly("PurpleAllies", 40));
         }
     
-        // Compute total weight
+
         int totalWeight = 0;
         for (WeightedAlly wa : weightedAllies) {
             totalWeight += wa.weight;
         }
     
-        // Select random weight
+
         Random random = new Random();
         int randomWeight = random.nextInt(totalWeight);
     
-        // Choose ally based on weight
+
         int sum = 0;
         String selectedType = "";
         for (WeightedAlly wa : weightedAllies) {
@@ -256,7 +256,7 @@ public class Playing {
             }
         }
     
-        // Create instance and increase count
+
         switch (selectedType) {
             case "BlueAllies":
                 return new BlueAllies(spawnX, spawnY);
@@ -273,7 +273,7 @@ public class Playing {
                 purpleAllies = new PurpleAllies(spawnX, spawnY, playerManager);
                 return purpleAllies;
             default:
-                return new BlueAllies(spawnX, spawnY); // fallback
+                return new BlueAllies(spawnX, spawnY);
         }
     }
     
@@ -302,27 +302,26 @@ public class Playing {
         if (same.size() >= 2) {
             Allies a1 = same.get(0);
             Allies a2 = same.get(1);
-    
-            // Cleanup all related MoveManagers
+
             for (MoveManager mm : new ArrayList<>(alliesMoveManager)) {
                 if (mm.getMovedObject() == a1 || mm.getMovedObject() == a2 || mm.getMovedObject() == newAlly) {
                     mm.cleanup();
                 }
             }
     
-            // Remove merged allies from the queue
+
             alliesManager.getAlliesQueue().remove(a1);
             alliesManager.getAlliesQueue().remove(a2);
             alliesManager.getAlliesQueue().remove(newAlly);
     
-            // Remove related MoveManagers
+
             alliesMoveManager.removeIf(m ->
                 m.getMovedObject() == a1 ||
                 m.getMovedObject() == a2 ||
                 m.getMovedObject() == newAlly
             );
     
-            // Create upgraded ally
+
             Allies upgraded = upgradeAlly(newAlly.getType(), newAlly.getX(), newAlly.getY(), level + 1);
             alliesManager.add(upgraded);
             alliesMoveManager.add(new MoveManager(upgraded));
@@ -407,7 +406,6 @@ public class Playing {
         managers.add(playerManager);
         managers.addAll(alliesMoveManager);
         int n = managers.size();
-        // System.out.println("Size is = "+n);
         float[] offsetX = new float[n];
         float[] offsetY = new float[n];
         for (int i = 0; i < n; i++) {
@@ -465,7 +463,7 @@ public class Playing {
             Allies ally = newList.get(i);
             ally.draw(g, allyPixel.x, allyPixel.y);
         }
-        drawFlowField(g2, playerManager);
+//        drawFlowField(g2, playerManager);
     }
 
     public void updateGame(float dT) {
@@ -474,17 +472,12 @@ public class Playing {
             avoidOverlapping();
         }
         enemiesManager.update();
-//        bullets.removeIf(bullet -> {
-//            bullet.move();
-//            return bullet.isOutOfBounds();
-//        });
 
         for (Allies ally : alliesManager.getAlliesList()) {
             ally.update();
         }
 
         player.setAlliesManager(alliesManager);
-
         removeDeadEnemies();
     }
 
@@ -554,7 +547,6 @@ public class Playing {
     private void assignTargetPositions(Point center) {
         List<Point> positions = calculateFormation(center);
         if (positions.isEmpty()) {
-            System.out.println("Warning: No valid positions found for target assignment.");
             return;
         }
 

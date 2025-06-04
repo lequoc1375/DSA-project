@@ -56,7 +56,7 @@ public class PurpleAllies extends Allies {
     public void bless() {
         if (isCooldown) return;
         isBlessing = true;
-        blessingTimer = new Timer(blessingDuration*10, e -> isBlessing = false);
+        blessingTimer = new Timer(blessingDuration, e -> isBlessing = false);
         blessingTimer.setRepeats(false);
         blessingTimer.start();
 

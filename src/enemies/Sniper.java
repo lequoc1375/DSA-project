@@ -49,7 +49,6 @@ public class Sniper extends Enemy {
 
 
         attackTimer = new Timer((int)fireRate, (ActionEvent e) -> {
-            System.out.println("Timer triggered!");
             if (isPlayerWithinRange()) {
                 int startX = this.x ;
                 int startY = this.y ;
@@ -107,7 +106,6 @@ public class Sniper extends Enemy {
             bullet.move();
 
             if (bullet.getBounds().intersects(player.getBound())) {
-                System.out.println("Player trúng đạn");  
                 iterator.remove();
                 playerObject.playerIsHit();
             }
